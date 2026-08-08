@@ -1,7 +1,7 @@
 /* 수리수리 오프라인 캐시 — 배포마다 VERSION 올리면 자동 갱신 */
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = "suri-" + VERSION;
-const ASSETS = ["./", "index.html", "manifest.json", "problems.json", "icon-180.png", "icon-512.png"];
+const ASSETS = ["./", "index.html", "manifest.json", "problems.json", "dialogue.json", "icon-180.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
