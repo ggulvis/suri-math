@@ -193,15 +193,25 @@ body{
 .shopitem .pr{font-size:12px;color:var(--sub);font-weight:700}
 .shopitem.owned{border-color:var(--good);background:#f0fbf3}
 .shopitem.cant{opacity:.5}
-.eggrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.eggslot{
-  background:#faf7ff;border:2px solid #e2daff;border-radius:16px;
-  width:64px;height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-size:28px;cursor:pointer;
+/* ---------- 도감 ---------- */
+.dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.dexcard{
+  background:#faf7ff;border:2px solid #e2daff;border-radius:16px;padding:10px 8px;
+  text-align:center;cursor:pointer;position:relative;transition:transform .1s;
 }
-.eggslot .lbl{font-size:10px;color:var(--sub);font-weight:700}
-.eggslot.locked{opacity:.45;filter:grayscale(1)}
-.eggslot.active{outline:3px solid var(--accent)}
+.dexcard:active{transform:translateY(2px)}
+.dexcard.here{border-color:var(--accent);background:#f2eeff;box-shadow:0 0 0 3px rgba(124,92,255,.18)}
+.dexcard.locked{cursor:default;background:#f4f2f8;border-color:#e6e2ef}
+.dexcard .art{font-size:44px;line-height:1.1;height:64px;display:flex;align-items:center;justify-content:center}
+.dexcard .art img{width:60px;height:60px;object-fit:contain}
+.dexcard.locked .art{filter:grayscale(1) brightness(.75);opacity:.5}
+.dexcard .dname{font-size:14px;font-weight:800;margin-top:2px}
+.dexcard .dstage{font-size:11px;font-weight:800;color:#fff;background:var(--accent);border-radius:99px;padding:2px 8px;display:inline-block;margin-top:4px}
+.dexcard.locked .dstage{background:#b9b2cc}
+.dexcard .dmeta{font-size:10px;color:var(--sub);font-weight:700;margin-top:5px;line-height:1.5}
+.dexcard .dbarwrap{height:7px;background:#e9e3fb;border-radius:99px;overflow:hidden;margin-top:6px}
+.dexcard .dbarwrap>div{height:100%;background:linear-gradient(90deg,var(--accent),#a58bff);border-radius:99px}
+.dexcard .here-tag{position:absolute;top:6px;right:6px;font-size:13px}
 
 /* ---------- GAME ---------- */
 #game{gap:10px}
@@ -349,7 +359,7 @@ select.txtinput{width:180px}
     <button class="nav on" data-nav="home">🏠<span>홈</span></button>
     <button class="nav primary" id="startBtn">📚<span>공부 모험</span></button>
     <button class="nav" id="shopBtn">🛍️<span>상점</span></button>
-    <button class="nav" id="eggBtn">🐣<span>친구들</span></button>
+    <button class="nav" id="eggBtn">📖<span>도감</span></button>
   </nav>
 </div>
 
@@ -365,12 +375,12 @@ select.txtinput{width:180px}
   </div>
 </div>
 
-<!-- 친구들(알) 모달 -->
+<!-- 도감 모달 -->
 <div class="modal" id="eggModal">
   <div class="sheet">
-    <h3>🥚 내 친구들 <button class="x" data-close="eggModal">✕</button></h3>
-    <div class="eggrow" id="eggrow"></div>
-    <div class="smallnote">새 친구 알은 수학 영역을 마스터하면 찾아와요!</div>
+    <h3>📖 친구 도감 <span id="dexProg" style="font-size:13px;color:var(--sub)"></span><button class="x" data-close="eggModal">✕</button></h3>
+    <div class="dexgrid" id="dexGrid"></div>
+    <div class="smallnote">카드를 누르면 그 친구와 함께 지낼 수 있어요. 새 친구는 수학 영역을 마스터하거나 상점에서 알을 데려오면 만나요!</div>
   </div>
 </div>
 
@@ -471,7 +481,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "11";
+const APP_VERSION = "12";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -762,8 +772,10 @@ function houseLevel() {
   return lv;
 }
 function migratePet() {
-  if (!S.pet) S.pet = { active: "owl", pets: { owl: { stage: 0, xp: 0 } }, hearts: 5, ts: Date.now() };
+  if (!S.pet) S.pet = { active: "owl", pets: { owl: { stage: 0, xp: 0, since: Date.now() } }, hearts: 5, ts: Date.now() };
   if (!S.house) S.house = { owned: [] };
+  // 도감의 '만난 날' — 기존 저장본에는 없으니 지금으로 채운다
+  for (const p of Object.values(S.pet.pets)) if (!p.since) p.since = Date.now();
   if (S.pet.asleep === undefined) S.pet.asleep = false;
   if (S.pet.sick === undefined) S.pet.sick = false;
   // 하트 시간 감쇠 (자는 동안은 감쇠 없음)
@@ -793,7 +805,7 @@ function petGainXp(events) {
 function checkEggUnlock(events) {
   for (const [id, sp] of Object.entries(SPECIES)) {
     if (!S.pet.pets[id] && sp.unlock && mastered(sp.unlock)) {
-      S.pet.pets[id] = { stage: 0, xp: 0 };
+      S.pet.pets[id] = { stage: 0, xp: 0, since: Date.now() };
       events.push({ type: "egg", id });
       save();
     }
@@ -1097,7 +1109,7 @@ function renderShop() {
         (owned ? "" : `<div class="pr" style="font-size:10px">무료: ${SKILLS[sp.unlock].name} 마스터</div>`);
       if (!owned) el.onclick = () => {
         if (S.stars < cost) { $("#shopNote").textContent = "⭐ 별이 부족해요. 공부 모험에서 별을 모아 와요!"; return; }
-        S.stars -= cost; S.pet.pets[id] = { stage: 0, xp: 0 }; save();
+        S.stars -= cost; S.pet.pets[id] = { stage: 0, xp: 0, since: Date.now() }; save();
         sfxGood(); renderShop(); renderHome();
         $("#shopNote").textContent = `🥚✨ ${sp.name}의 알을 데려왔어요! 정답을 맞히면 부화해요.`;
         speak(`${sp.name}의 알을 데려왔어요! 문제를 맞히면 부화해요.`);
@@ -1125,18 +1137,50 @@ function renderShop() {
   }
   $("#shopNote").textContent = `방 자리: ${S.house.owned.length}/${slots} (집이 커지면 늘어나요)`;
 }
+const STAGE_LABEL = ["알", "아기", "어른"];
+function fmtDate(ts) {
+  if (!ts) return "-";
+  const d = new Date(ts);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
 function renderEggs() {
-  const row = $("#eggrow");
-  row.innerHTML = "";
-  for (const [sid, sp2] of Object.entries(SPECIES)) {
-    const owned = !!S.pet.pets[sid];
+  const g = $("#dexGrid");
+  g.innerHTML = "";
+  const total = Object.keys(SPECIES).length;
+  const met = Object.keys(S.pet.pets).length;
+  $("#dexProg").textContent = `${met}/${total} 친구를 만났어요`;
+  for (const [sid, sp] of Object.entries(SPECIES)) {
+    const p = S.pet.pets[sid];
     const el = document.createElement("div");
-    el.className = "eggslot" + (owned ? "" : " locked") + (sid === S.pet.active ? " active" : "");
-    el.innerHTML = owned
-      ? `<span>${SPECIES[sid].stages[S.pet.pets[sid].stage]}</span><span class="lbl">${S.pet.pets[sid].stage === 0 ? "알" : sp2.name}</span>`
-      : `<span>🥚</span><span class="lbl">🔒${SKILLS[sp2.unlock].name}</span>`;
-    if (owned) el.onclick = () => { S.pet.active = sid; save(); sfxTap(); renderEggs(); renderHome(); };
-    row.appendChild(el);
+    if (!p) {
+      el.className = "dexcard locked";
+      el.innerHTML =
+        `<div class="art">🥚</div><div class="dname">???</div>` +
+        `<div class="dstage">아직 못 만났어요</div>` +
+        `<div class="dmeta">🔒 ${SKILLS[sp.unlock].name} 마스터<br>또는 상점에서 ⭐${EGG_PRICE[sid]}</div>`;
+      g.appendChild(el);
+      continue;
+    }
+    loadArt(sid);
+    const here = sid === S.pet.active;
+    // 다음 단계까지 진행도
+    const need = p.stage === 0 ? HATCH_XP : p.stage === 1 ? EVOLVE_XP : 0;
+    const pct = need ? Math.min(100, Math.round(p.xp / need * 100)) : 100;
+    el.className = "dexcard" + (here ? " here" : "");
+    el.innerHTML =
+      (here ? `<span class="here-tag">🏠</span>` : "") +
+      `<div class="art">${petArtHTML(sid, "idle")}</div>` +
+      `<div class="dname">${sp.name}</div>` +
+      `<div class="dstage">${STAGE_LABEL[p.stage]}</div>` +
+      `<div class="dbarwrap"><div style="width:${pct}%"></div></div>` +
+      `<div class="dmeta">${need ? `다음 단계까지 ${Math.max(0, need - p.xp)}문제` : "다 자랐어요 🎉"}<br>` +
+      `만난 날 ${fmtDate(p.since)}</div>`;
+    el.onclick = () => {
+      S.pet.active = sid; save(); sfxTap();
+      renderEggs(); renderHome();
+      if (p.stage > 0) speak(`${sp.name}와 함께 지내요!`);
+    };
+    g.appendChild(el);
   }
 }
 
