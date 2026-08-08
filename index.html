@@ -193,6 +193,58 @@ body{
 .shopitem .pr{font-size:12px;color:var(--sub);font-weight:700}
 .shopitem.owned{border-color:var(--good);background:#f0fbf3}
 .shopitem.cant{opacity:.5}
+/* ---------- 패션 착용 렌더 ---------- */
+.w-aura{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-45%);
+  font-size:clamp(96px,15vw,150px);opacity:.5;z-index:0;pointer-events:none;
+  animation:auraSpin 6s linear infinite;
+}
+@keyframes auraSpin{from{transform:translate(-50%,-45%) rotate(0)}to{transform:translate(-50%,-45%) rotate(360deg)}}
+.w-hat{
+  position:absolute;left:50%;top:-4px;transform:translateX(-50%);
+  font-size:clamp(30px,4.4vw,42px);z-index:4;pointer-events:none;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));
+}
+.w-balloon{
+  position:absolute;right:-14px;top:-30px;font-size:clamp(26px,3.6vw,34px);
+  z-index:4;pointer-events:none;animation:floaty 2.6s ease-in-out infinite;
+}
+.w-balloon:after{
+  content:"";position:absolute;left:50%;top:88%;width:2px;height:26px;
+  background:rgba(90,70,180,.4);transform:translateX(-50%);
+}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+#petArt{position:relative;z-index:2}
+.roomie .rw{position:absolute;pointer-events:none}
+.roomie .rw.hat{left:50%;top:-2px;transform:translateX(-50%);font-size:22px;z-index:3}
+.roomie .rw.balloon{right:-10px;top:-18px;font-size:19px;z-index:3;animation:floaty 2.6s ease-in-out infinite}
+.roomie .rw.aura{left:50%;top:50%;transform:translate(-50%,-45%);font-size:64px;opacity:.45;z-index:0}
+
+/* ---------- 패션 상점 ---------- */
+#fashionPreview{
+  display:none;background:linear-gradient(#f6f1ff,#efe7ff);border-radius:16px;
+  padding:14px;margin-bottom:12px;text-align:center;position:relative;
+}
+#fashionPreview.on{display:block}
+#fpStage{position:relative;display:inline-block;width:130px;height:130px}
+#fpStage .fpArt{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:70px;z-index:2}
+#fpStage .fpArt img{width:104px;height:104px;object-fit:contain}
+#fpStage .fpAura{position:absolute;left:50%;top:50%;transform:translate(-50%,-48%);font-size:120px;opacity:.5;z-index:0;animation:auraSpin 6s linear infinite}
+#fpStage .fpHat{position:absolute;left:50%;top:0;transform:translateX(-50%);font-size:36px;z-index:3}
+#fpStage .fpBalloon{position:absolute;right:0;top:2px;font-size:30px;z-index:3;animation:floaty 2.6s ease-in-out infinite}
+#fpLabel{font-size:13px;font-weight:800;color:var(--sub);margin-top:4px}
+.fcats{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.fcat{border:2px solid #e2daff;background:#faf7ff;border-radius:99px;font-family:inherit;
+  font-size:13px;font-weight:800;color:var(--sub);padding:6px 12px;cursor:pointer}
+.fcat.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.shopitem .fbtns{display:flex;gap:4px;margin-top:6px}
+.shopitem .fbtns button{
+  flex:1;border:none;border-radius:9px;font-family:inherit;font-size:11px;font-weight:800;
+  padding:6px 2px;cursor:pointer;background:#efe9ff;color:var(--sub);
+}
+.shopitem .fbtns button.buy{background:var(--accent);color:#fff}
+.shopitem .fbtns button.on{background:var(--good);color:#fff}
+
 /* ---------- 퀘스트 ---------- */
 .badge{
   display:inline-flex;align-items:center;justify-content:center;
@@ -363,6 +415,9 @@ select.txtinput{width:180px}
       <div id="houseBadge"></div>
       <div id="petSprite">
         <div class="bubble" id="petBubble"></div>
+        <span class="w-aura" id="wAura"></span>
+        <span class="w-hat" id="wHat"></span>
+        <span class="w-balloon" id="wBalloon"></span>
         <span id="petArt">🥚</span><span id="petFx"></span>
       </div>
     </div>
@@ -399,8 +454,13 @@ select.txtinput{width:180px}
   <div class="sheet">
     <h3>🛍️ 상점 <span style="font-size:14px;color:var(--sub)">⭐<span id="shopStars">0</span></span><button class="x" data-close="shopModal">✕</button></h3>
     <div class="seg" style="margin-bottom:12px" id="shopTabs">
-      <button data-t="deco" class="on">🪴 꾸미기</button><button data-t="egg">🥚 알</button>
+      <button data-t="deco" class="on">🪴 방꾸미기</button><button data-t="fashion">🎈 패션</button><button data-t="egg">🥚 알</button>
     </div>
+    <div id="fashionPreview">
+      <div id="fpStage"></div>
+      <div id="fpLabel"></div>
+    </div>
+    <div class="fcats" id="fCats" style="display:none"></div>
     <div class="shopgrid" id="shopGrid"></div>
     <div class="smallnote" id="shopNote"></div>
   </div>
@@ -521,7 +581,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "13";
+const APP_VERSION = "14";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -796,6 +856,28 @@ function loadRoomArt(lv) {
 }
 /* 알 상점: 마스터 무료 획득과 병행되는 구매 경로 (별 = 학습 재화) */
 const EGG_PRICE = { dino: 12, cat: 12, penguin: 12, dragon: 20, unicorn: 20 };
+/* 패션: 소유는 공용, 착용은 친구별 (각자 다르게 꾸밀 수 있게) */
+const FASHION = [
+  { id: "b_red",    cat: "balloon", e: "🎈", n: "빨강 풍선",   cost: 4 },
+  { id: "b_heart",  cat: "balloon", e: "💗", n: "하트 풍선",   cost: 6 },
+  { id: "b_star",   cat: "balloon", e: "⭐", n: "별 풍선",     cost: 8 },
+  { id: "b_rain",   cat: "balloon", e: "🌈", n: "무지개 풍선", cost: 10 },
+  { id: "h_ribbon", cat: "hat",     e: "🎀", n: "리본",        cost: 5 },
+  { id: "h_cap",    cat: "hat",     e: "🧢", n: "야구모자",    cost: 5 },
+  { id: "h_magic",  cat: "hat",     e: "🎩", n: "마술모자",    cost: 7 },
+  { id: "h_crown",  cat: "hat",     e: "👑", n: "왕관",        cost: 10 },
+  { id: "a_spark",  cat: "aura",    e: "✨", n: "반짝 오오라", cost: 6 },
+  { id: "a_star",   cat: "aura",    e: "💫", n: "별빛 오오라", cost: 9 },
+  { id: "a_fire",   cat: "aura",    e: "🔥", n: "불꽃 오오라", cost: 12 },
+];
+const FASHION_CAT = { balloon: "🎈 풍선", hat: "🎩 모자", aura: "✨ 오오라" };
+const fashionById = id => FASHION.find(f => f.id === id);
+function wearOf(petId) {
+  const p = S.pet.pets[petId];
+  if (!p) return {};
+  if (!p.wear) p.wear = { balloon: null, hat: null, aura: null };
+  return p.wear;
+}
 const SHOP = [
   { id: "plant",  e: "🪴", n: "화분",     cost: 4, style: "left:4%;bottom:8%" },
   { id: "bear",   e: "🧸", n: "곰인형",   cost: 6, style: "left:22%;bottom:7%" },
@@ -813,7 +895,8 @@ function houseLevel() {
 }
 function migratePet() {
   if (!S.pet) S.pet = { active: "owl", pets: { owl: { stage: 0, xp: 0, since: Date.now() } }, hearts: 5, ts: Date.now() };
-  if (!S.house) S.house = { owned: [] };
+  if (!S.house) S.house = { owned: [], fashion: [] };
+  if (!S.house.fashion) S.house.fashion = [];
   // 도감의 '만난 날' — 기존 저장본에는 없으니 지금으로 채운다
   for (const p of Object.values(S.pet.pets)) if (!p.since) p.since = Date.now();
   if (S.pet.asleep === undefined) S.pet.asleep = false;
@@ -1019,7 +1102,13 @@ function renderHome() {
     el.className = "roomie";
     el.style.left = (12 + i * 22) + "%";
     el.dataset.sp = id;
-    el.innerHTML = `<div class="bubble"></div><span class="rart">${petArtHTML(id, "idle")}</span>`;
+    const rw = wearOf(id);
+    const rwe = k => (S.pet.pets[id].stage > 0 && rw[k] && fashionById(rw[k])) ? fashionById(rw[k]).e : "";
+    el.innerHTML = `<div class="bubble"></div>` +
+      (rwe("aura") ? `<span class="rw aura">${rwe("aura")}</span>` : "") +
+      `<span class="rart">${petArtHTML(id, "idle")}</span>` +
+      (rwe("hat") ? `<span class="rw hat">${rwe("hat")}</span>` : "") +
+      (rwe("balloon") ? `<span class="rw balloon">${rwe("balloon")}</span>` : "");
     el.onclick = () => roomieTalk(id, el);
     rz.appendChild(el);
   });
@@ -1039,6 +1128,13 @@ function renderHome() {
   const p = activePet(), mood = petMoodState();
   $("#petArt").innerHTML = petArtHTML(S.pet.active, mood === "sad" ? "sad" : mood);
   $("#petSprite").classList.toggle("asleep", S.pet.asleep);
+  // 착용 아이템 (알일 때는 안 보임)
+  const w = wearOf(S.pet.active);
+  const wear = k => (p.stage > 0 && w[k] && fashionById(w[k])) ? fashionById(w[k]).e : "";
+  $("#wAura").textContent = wear("aura");
+  $("#wHat").textContent = wear("hat");
+  $("#wBalloon").textContent = wear("balloon");
+  $("#wBalloon").style.display = wear("balloon") ? "" : "none";
   const status = p.stage === 0
     ? `🥚 정답 ${Math.max(0, HATCH_XP - p.xp)}개 더 맞히면 부화!`
     : `${SPECIES[S.pet.active].name} · ${"❤️".repeat(S.pet.hearts)}${"🤍".repeat(HEART_MAX - S.pet.hearts)}` +
@@ -1136,13 +1232,101 @@ let shopTab = "deco";
 $("#shopTabs").onclick = e => {
   if (!e.target.dataset.t) return;
   shopTab = e.target.dataset.t;
+  previewId = null;
+  $("#shopNote").textContent = "";
   document.querySelectorAll("#shopTabs button").forEach(b => b.classList.toggle("on", b.dataset.t === shopTab));
   renderShop();
 };
+let fashionCat = "balloon", previewId = null;
+function renderFashionPreview() {
+  const id = S.pet.active, p = activePet(), sp = SPECIES[id];
+  const w = wearOf(id);
+  // 미리보기 대상: 임시 선택(previewId)이 있으면 그 카테고리를 덮어씀
+  const shown = { ...w };
+  const pv = previewId ? fashionById(previewId) : null;
+  if (pv) shown[pv.cat] = pv.id;
+  const g = (k) => shown[k] ? fashionById(shown[k]).e : "";
+  $("#fpStage").innerHTML =
+    (g("aura") ? `<span class="fpAura">${g("aura")}</span>` : "") +
+    `<span class="fpArt">${petArtHTML(id, "idle")}</span>` +
+    (g("hat") ? `<span class="fpHat">${g("hat")}</span>` : "") +
+    (g("balloon") ? `<span class="fpBalloon">${g("balloon")}</span>` : "");
+  $("#fpLabel").textContent = pv
+    ? `${sp.name}에게 ${pv.n} 미리보기`
+    : `${sp.name}의 지금 모습 (도감에서 친구를 바꿀 수 있어요)`;
+}
+function renderFashion() {
+  $("#fashionPreview").classList.add("on");
+  $("#fCats").style.display = "flex";
+  renderFashionPreview();
+  // 카테고리 탭
+  const cats = $("#fCats");
+  cats.innerHTML = "";
+  for (const [k, label] of Object.entries(FASHION_CAT)) {
+    const b = document.createElement("button");
+    b.className = "fcat" + (k === fashionCat ? " on" : "");
+    b.textContent = label;
+    b.onclick = () => { fashionCat = k; previewId = null; renderShop(); };
+    cats.appendChild(b);
+  }
+  const owned = S.house.fashion || (S.house.fashion = []);
+  const w = wearOf(S.pet.active);
+  const g = $("#shopGrid");
+  for (const it of FASHION.filter(f => f.cat === fashionCat)) {
+    const have = owned.includes(it.id);
+    const worn = w[it.cat] === it.id;
+    const el = document.createElement("div");
+    el.className = "shopitem" + (worn ? " owned" : have ? "" : S.stars < it.cost ? " cant" : "");
+    el.innerHTML = `<div class="ico">${it.e}</div><div class="nm">${it.n}</div>` +
+      `<div class="pr">${have ? (worn ? "착용 중 ✓" : "보유중") : "⭐" + it.cost}</div>`;
+    const btns = document.createElement("div");
+    btns.className = "fbtns";
+    // 미리보기
+    const pb = document.createElement("button");
+    pb.textContent = "미리보기";
+    pb.onclick = (e) => { e.stopPropagation(); previewId = it.id; sfxTap(); renderFashionPreview(); };
+    btns.appendChild(pb);
+    // 구매 / 착용 / 벗기
+    const ab = document.createElement("button");
+    if (!have) {
+      ab.className = "buy"; ab.textContent = `구매`;
+      ab.onclick = (e) => {
+        e.stopPropagation();
+        if (S.stars < it.cost) { $("#shopNote").textContent = "⭐ 별이 부족해요. 공부 모험에서 별을 모아 와요!"; return; }
+        S.stars -= it.cost; owned.push(it.id); save();
+        sfxGood(); previewId = null;
+        renderShop(); renderHome();
+        $("#shopNote").textContent = `${it.e} ${it.n}을(를) 샀어요! '착용하기'를 눌러 입혀 보세요.`;
+      };
+    } else if (worn) {
+      ab.className = "on"; ab.textContent = "벗기";
+      ab.onclick = (e) => {
+        e.stopPropagation();
+        w[it.cat] = null; save(); sfxTap(); previewId = null;
+        renderShop(); renderHome();
+      };
+    } else {
+      ab.textContent = "착용하기";
+      ab.onclick = (e) => {
+        e.stopPropagation();
+        w[it.cat] = it.id; save(); sfxGood(); previewId = null;
+        renderShop(); renderHome();
+        $("#shopNote").textContent = `${SPECIES[S.pet.active].name}에게 ${it.n}을(를) 입혔어요!`;
+      };
+    }
+    btns.appendChild(ab);
+    el.appendChild(btns);
+    g.appendChild(el);
+  }
+  if (!$("#shopNote").textContent.includes("입혔") && !$("#shopNote").textContent.includes("샀어요"))
+    $("#shopNote").textContent = "미리보기로 확인한 뒤 구매하고, '착용하기'로 입혀요. 친구마다 따로 꾸밀 수 있어요!";
+}
 function renderShop() {
   $("#shopStars").textContent = S.stars;
   const g = $("#shopGrid");
   g.innerHTML = "";
+  if (shopTab !== "fashion") { $("#fashionPreview").classList.remove("on"); $("#fCats").style.display = "none"; }
+  if (shopTab === "fashion") return renderFashion();
   if (shopTab === "egg") {
     for (const [id, sp] of Object.entries(SPECIES)) {
       if (!sp.unlock) continue;
