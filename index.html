@@ -442,7 +442,12 @@ function petLine(kind) {
   const per = PERSONA[S.pet.active] || PERSONA.owl;
   const pool = per[kind] && per[kind].length ? per[kind] : per.greet;
   S.pet.lineIdx = ((S.pet.lineIdx || 0) + 1) % 997;
-  return pool[S.pet.lineIdx % pool.length].replace(/\{child\}/g, voc(S.settings.childName));
+  const nm = S.settings.childName;
+  const bare = nm ? nm + (hasJongName(nm) ? "이" : "") : "친구";  // 조사 앞: 하준이/지우
+  return pool[S.pet.lineIdx % pool.length]
+    .replace(/\{child\}[야아]/g, voc(nm))              // 이미 호격 조사가 붙은 경우 중복 방지
+    .replace(/\{child\}(?=[,!?.…~]|$)/g, voc(nm))      // 부르는 위치 → 호격
+    .replace(/\{child\}/g, bare);                       // 그 외(의/랑/가/덕분에…) → 이름(+이)
 }
 function petAnimate(state) {
   const face = $("#petFace");
