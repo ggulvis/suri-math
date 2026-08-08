@@ -193,6 +193,36 @@ body{
 .shopitem .pr{font-size:12px;color:var(--sub);font-weight:700}
 .shopitem.owned{border-color:var(--good);background:#f0fbf3}
 .shopitem.cant{opacity:.5}
+/* ---------- 퀘스트 ---------- */
+.badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--bad);color:#fff;font-size:11px;font-weight:800;
+  min-width:18px;height:18px;border-radius:99px;margin-left:6px;padding:0 5px;
+}
+.qsec{font-size:13px;font-weight:800;color:var(--sub);margin:14px 0 8px}
+.qsec:first-child{margin-top:0}
+.qrow{
+  display:flex;align-items:center;gap:10px;background:#faf7ff;border:2px solid #e2daff;
+  border-radius:14px;padding:10px 12px;margin-bottom:8px;
+}
+.qrow.done{border-color:var(--good);background:#f1fbf4}
+.qrow .qico{font-size:24px}
+.qrow .qmid{flex:1;min-width:0}
+.qrow .qtitle{font-size:14px;font-weight:800}
+.qrow .qbar{height:8px;background:#e9e3fb;border-radius:99px;overflow:hidden;margin-top:5px}
+.qrow .qbar>div{height:100%;background:linear-gradient(90deg,var(--accent),#a58bff);border-radius:99px;transition:width .4s}
+.qrow.done .qbar>div{background:var(--good)}
+.qrow .qnum{font-size:11px;color:var(--sub);font-weight:700;margin-top:3px}
+.qrow .qbtn{
+  border:none;border-radius:12px;font-family:inherit;font-size:13px;font-weight:800;
+  padding:9px 12px;cursor:pointer;white-space:nowrap;
+}
+.qrow .qbtn.can{background:var(--accent2);color:#6b4400;box-shadow:0 4px 0 #d9922e;animation:qpulse 1.4s ease-in-out infinite}
+.qrow .qbtn.can:active{transform:translateY(3px);box-shadow:0 1px 0 #d9922e}
+.qrow .qbtn.got{background:#eaf7ee;color:var(--good)}
+.qrow .qbtn.wait{background:#efe9ff;color:var(--sub)}
+@keyframes qpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
 /* ---------- 도감 ---------- */
 .dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .dexcard{
@@ -340,6 +370,7 @@ select.txtinput{width:180px}
       <button class="chip" id="feedBtn">🍖 밥 ⭐2</button>
       <button class="chip" id="sleepBtn" style="display:none">💤 재우기</button>
       <button class="chip" id="cureBtn" style="display:none">💊 치료 ⭐3</button>
+      <button class="chip" id="questBtn">🎯 퀘스트<span id="questBadge" class="badge" style="display:none">0</span></button>
       <span id="houseProg"></span>
     </div>
     <div class="dash">
@@ -372,6 +403,15 @@ select.txtinput{width:180px}
     </div>
     <div class="shopgrid" id="shopGrid"></div>
     <div class="smallnote" id="shopNote"></div>
+  </div>
+</div>
+
+<!-- 퀘스트 모달 -->
+<div class="modal" id="questModal">
+  <div class="sheet">
+    <h3>🎯 퀘스트 <span style="font-size:14px;color:var(--sub)">⭐<span id="questStars">0</span></span><button class="x" data-close="questModal">✕</button></h3>
+    <div id="questList"></div>
+    <div class="smallnote">목표를 채우면 별을 받아요. 오늘 목표는 매일 새로 생겨요!</div>
   </div>
 </div>
 
@@ -481,7 +521,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "12";
+const APP_VERSION = "13";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -496,7 +536,7 @@ const defaultState = () => ({
   stars: 0, starsEarned: 0,
   settings: { max: 10, len: 10, tts: 1, lang: "ko", input: "tap", childName: "", voiceKo: "" },
   skills: {}, miscon: {}, remediation: [], log: [],
-  pet: null, house: null,
+  pet: null, house: null, quests: null,
 });
 let S;
 try { S = Object.assign(defaultState(), JSON.parse(localStorage.getItem(KEY) || "{}")); }
@@ -960,6 +1000,12 @@ function renderHome() {
   $("#ctCalc").textContent = grp.calc;
   $("#ctStory").textContent = grp.story;
   $("#streakDays").textContent = streakDays();
+  // 받을 수 있는 퀘스트 개수 배지
+  migrateQuests();
+  const cc = claimableCount();
+  const badge = $("#questBadge");
+  badge.textContent = cc;
+  badge.style.display = cc ? "inline-flex" : "none";
   // 룸메이트: 부화한 다른 친구들도 방에서 같이 산다 (집 크기만큼)
   const cap = H.petCap;
   const mates = Object.keys(S.pet.pets)
@@ -1137,6 +1183,85 @@ function renderShop() {
   }
   $("#shopNote").textContent = `방 자리: ${S.house.owned.length}/${slots} (집이 커지면 늘어나요)`;
 }
+/* ---------- 퀘스트 (전부 결정론 평가 — 기록에서 계산) ----------
+   daily: 날짜별로 새로 생김 / once: 한 번만 받는 업적 */
+const QUESTS = [
+  { id: "d_solve10",  kind: "daily", ico: "📚", title: "오늘 10문제 풀기",      goal: 10, reward: 3,
+    prog: () => todayLog().length },
+  { id: "d_correct8", kind: "daily", ico: "⭐", title: "오늘 8문제 맞히기",     goal: 8,  reward: 3,
+    prog: () => todayLog().filter(l => l.correct).length },
+  { id: "d_story3",   kind: "daily", ico: "📖", title: "이야기 문제 3개 맞히기", goal: 3, reward: 4,
+    prog: () => todayLog().filter(l => l.skill === "S5" && l.correct).length },
+  { id: "o_streak3",  kind: "once",  ico: "🔥", title: "3일 연속 공부하기",      goal: 3,  reward: 5,
+    prog: () => streakDays() },
+  { id: "o_streak7",  kind: "once",  ico: "🔥", title: "7일 연속 공부하기",      goal: 7,  reward: 10,
+    prog: () => streakDays() },
+  { id: "o_hatch",    kind: "once",  ico: "🐣", title: "알을 부화시키기",        goal: 1,  reward: 3,
+    prog: () => Object.values(S.pet.pets).filter(p => p.stage > 0).length },
+  { id: "o_adult",    kind: "once",  ico: "🎉", title: "친구를 어른으로 키우기",  goal: 1,  reward: 6,
+    prog: () => Object.values(S.pet.pets).filter(p => p.stage > 1).length },
+  { id: "o_friends3", kind: "once",  ico: "👨‍👩‍👧", title: "친구 3명 만나기",     goal: 3,  reward: 6,
+    prog: () => Object.keys(S.pet.pets).length },
+  { id: "o_master1",  kind: "once",  ico: "🏅", title: "수학 영역 하나 마스터",   goal: 1,  reward: 8,
+    prog: () => ORDER.filter(mastered).length },
+  { id: "o_master_all", kind: "once", ico: "👑", title: "수학 영역 모두 마스터",  goal: 5,  reward: 20,
+    prog: () => ORDER.filter(mastered).length },
+];
+const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+function questKey(q) { return q.kind === "daily" ? `${q.id}@${todayKey()}` : q.id; }
+function migrateQuests() {
+  if (!S.quests) S.quests = { claimed: {} };
+  // 지난 날짜의 일일 퀘스트 기록은 정리 (무한 증가 방지)
+  const tk = todayKey();
+  for (const k of Object.keys(S.quests.claimed)) {
+    if (k.includes("@") && !k.endsWith("@" + tk)) delete S.quests.claimed[k];
+  }
+}
+const questClaimed = q => !!S.quests.claimed[questKey(q)];
+const questDone = q => q.prog() >= q.goal;
+const claimableCount = () => QUESTS.filter(q => questDone(q) && !questClaimed(q)).length;
+function claimQuest(q) {
+  if (!questDone(q) || questClaimed(q)) return;
+  S.quests.claimed[questKey(q)] = true;
+  S.stars += q.reward; S.starsEarned += q.reward;
+  save();
+  sfxGood();
+  speak(`퀘스트 완료! 별 ${q.reward}개를 받았어요!`);
+  renderQuests(); renderHome();
+}
+function renderQuests() {
+  migrateQuests();
+  $("#questStars").textContent = S.stars;
+  const list = $("#questList");
+  list.innerHTML = "";
+  const groups = [["daily", "☀️ 오늘의 목표"], ["once", "🏆 업적"]];
+  for (const [kind, label] of groups) {
+    const qs = QUESTS.filter(q => q.kind === kind);
+    // 이미 받은 업적은 뒤로
+    qs.sort((a, b) => (questClaimed(a) ? 1 : 0) - (questClaimed(b) ? 1 : 0));
+    const h = document.createElement("div");
+    h.className = "qsec"; h.textContent = label;
+    list.appendChild(h);
+    for (const q of qs) {
+      const p = Math.min(q.prog(), q.goal), done = questDone(q), got = questClaimed(q);
+      const row = document.createElement("div");
+      row.className = "qrow" + (done ? " done" : "");
+      row.innerHTML =
+        `<span class="qico">${q.ico}</span>` +
+        `<div class="qmid"><div class="qtitle">${q.title}</div>` +
+        `<div class="qbar"><div style="width:${p / q.goal * 100}%"></div></div>` +
+        `<div class="qnum">${p} / ${q.goal}</div></div>`;
+      const btn = document.createElement("button");
+      btn.className = "qbtn " + (got ? "got" : done ? "can" : "wait");
+      btn.textContent = got ? "받았어요 ✓" : done ? `받기 ⭐${q.reward}` : `⭐${q.reward}`;
+      if (done && !got) btn.onclick = () => claimQuest(q);
+      row.appendChild(btn);
+      list.appendChild(row);
+    }
+  }
+}
+$("#questBtn").onclick = () => { renderQuests(); $("#questModal").classList.add("on"); };
+
 const STAGE_LABEL = ["알", "아기", "어른"];
 function fmtDate(ts) {
   if (!ts) return "-";
