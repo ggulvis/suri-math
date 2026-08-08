@@ -67,34 +67,90 @@ body{
 .nav.primary{background:var(--accent);color:#fff;box-shadow:0 6px 0 #5a3fd6}
 .nav.primary:active{transform:translateY(4px);box-shadow:0 2px 0 #5a3fd6}
 #roomies{position:absolute;inset:0;pointer-events:none}
-.roomie{position:absolute;bottom:9%;font-size:42px;transition:left 3.2s ease-in-out;pointer-events:auto;cursor:pointer}
-.roomie img{width:56px;height:56px;object-fit:contain}
+.roomie{position:absolute;bottom:11%;font-size:46px;transition:left 3.2s ease-in-out;pointer-events:auto;cursor:pointer}
+.roomie img{width:clamp(62px,9vw,86px);height:clamp(62px,9vw,86px);object-fit:contain}
 #houseBadge{position:absolute;top:8px;right:10px;font-size:12px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4);z-index:4}
 
 #room{
   position:relative;flex:1;min-height:0;border-radius:var(--radius);overflow:hidden;
   box-shadow:var(--shadow);
+  --wall:#f2e3c8; --wall2:#e8d5b2; --floor:#cbab7e; --floor2:#b3906a;
+  background-size:cover;background-position:center bottom;
 }
-#roomWall{position:absolute;inset:0;height:68%;transition:background 1s}
-#roomFloor{position:absolute;left:0;right:0;bottom:0;height:32%;transition:background 1s}
-#roomNight{position:absolute;inset:0;background:#1a1440;opacity:0;pointer-events:none;transition:opacity 1.2s}
+/* 벽: 은은한 벽지(줄무늬+물방울) */
+/* 벽: 전체를 덮고(측벽 역할) 바닥 아래는 어둡게 → 방 모서리가 생김 */
+#roomWall{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to bottom, transparent 56%, rgba(0,0,0,.13) 62%),
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 4px, transparent 5px) 0 0/54px 54px,
+    radial-gradient(circle at 70% 75%, rgba(255,255,255,.35) 3px, transparent 4px) 0 0/54px 54px,
+    repeating-linear-gradient(90deg, rgba(0,0,0,.03) 0 2px, transparent 2px 46px),
+    linear-gradient(var(--wall), var(--wall2));
+}
+/* 바닥: 앞이 넓은 원근 + 나무결 */
+#roomFloor{
+  position:absolute;left:0;right:0;bottom:0;height:42%;
+  clip-path:polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 1px, transparent 1px 13%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 1px, transparent 1px 12%),
+    linear-gradient(var(--floor), var(--floor2));
+}
+/* 걸레받이 */
+#roomFloor:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:7px;
+  background:linear-gradient(rgba(255,255,255,.5),rgba(0,0,0,.12));
+}
+/* 러그 */
+#roomFloor:after{
+  content:"";position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+  width:56%;height:46%;border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(255,255,255,.5), rgba(255,255,255,.18) 62%, transparent 72%);
+}
+/* 창문 채광 */
+#roomLight{
+  position:absolute;left:0;top:0;width:60%;height:78%;pointer-events:none;
+  background:radial-gradient(ellipse at 18% 12%, rgba(255,248,220,.55), transparent 62%);
+  transition:opacity 1.2s;
+}
+#room.night #roomLight{opacity:0}
+#roomNight{position:absolute;inset:0;background:linear-gradient(#1a1440,#241a52);opacity:0;pointer-events:none;transition:opacity 1.2s}
 #room.night #roomNight{opacity:.45}
 .window{
-  position:absolute;top:8%;left:8%;width:88px;height:74px;border-radius:14px;
-  border:5px solid #b98d5f;display:flex;align-items:center;justify-content:center;font-size:32px;
+  position:absolute;top:7%;left:7%;width:96px;height:80px;border-radius:10px;
+  border:6px solid #b98d5f;display:flex;align-items:center;justify-content:center;font-size:30px;
   background:linear-gradient(#aee3ff,#e8f8ff);transition:background 1.2s;
+  box-shadow:0 4px 10px rgba(0,0,0,.14), inset 0 0 0 2px rgba(255,255,255,.5);
+}
+/* 창틀 십자 + 창턱 */
+.window:before{
+  content:"";position:absolute;left:0;right:0;top:50%;height:4px;margin-top:-2px;background:#b98d5f;
+  box-shadow:0 0 0 100vmax transparent;
+}
+.window:after{
+  content:"";position:absolute;top:0;bottom:0;left:50%;width:4px;margin-left:-2px;background:#b98d5f;
 }
 #room.night .window{background:linear-gradient(#141033,#2c2260)}
-.lamp{position:absolute;top:6%;right:10%;font-size:34px;opacity:0;transition:opacity 1s}
+.lamp{position:absolute;top:6%;right:10%;font-size:34px;opacity:0;transition:opacity 1s;
+  filter:drop-shadow(0 0 12px rgba(255,214,120,.9))}
 #room.night .lamp{opacity:1}
-.bed{position:absolute;bottom:9%;right:6%;font-size:56px}
-.deco{position:absolute;font-size:38px}
-.deco.wall{font-size:34px}
+.bed{position:absolute;bottom:11%;right:6%;font-size:56px;filter:drop-shadow(0 5px 6px rgba(0,0,0,.22))}
+.deco{position:absolute;font-size:38px;filter:drop-shadow(0 4px 5px rgba(0,0,0,.2))}
+.deco.wall{font-size:34px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.16))}
+/* 캐릭터 접지 그림자 */
+#petSprite:after,.roomie:after{
+  content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);
+  width:52px;height:12px;border-radius:50%;background:rgba(0,0,0,.2);
+  filter:blur(3px);z-index:-1;
+}
+.roomie:after{width:38px;height:9px}
+#petSprite.asleep:after{opacity:.3}
 
-#petSprite{position:absolute;bottom:11%;left:40%;transition:left 2.8s ease-in-out;text-align:center;z-index:3}
-#petArt{font-size:64px;display:inline-block;transform:scaleX(var(--flip,1));transition:transform .3s}
-#petArt img{width:84px;height:84px;object-fit:contain;transform:scaleX(var(--flip,1))}
-#petSprite.asleep{left:63% !important;bottom:14%}
+#petSprite{position:absolute;bottom:13%;left:40%;transition:left 2.8s ease-in-out;text-align:center;z-index:3}
+#petArt{font-size:76px;display:inline-block;transform:scaleX(var(--flip,1));transition:transform .3s}
+#petArt img{width:clamp(90px,13vw,130px);height:clamp(90px,13vw,130px);object-fit:contain;transform:scaleX(var(--flip,1))}
+#petSprite.asleep{left:63% !important;bottom:16%}
 #petFx{position:absolute;top:-14px;right:-14px;font-size:24px;pointer-events:none}
 @keyframes fxFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-24px)}}
 #petFx.go{animation:fxFloat 1.6s ease forwards}
@@ -256,6 +312,7 @@ select.txtinput{width:180px}
     <div id="room">
       <div id="roomWall"></div>
       <div id="roomFloor"></div>
+      <div id="roomLight"></div>
       <div class="window" id="windowSky">☀️</div>
       <div class="lamp">🕯️</div>
       <div class="bed">🛏️</div>
@@ -414,7 +471,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "10";
+const APP_VERSION = "11";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -671,11 +728,22 @@ const FX = { happy: "✨", sad: "💧", angry: "💢", sick: "🤒", sleepy: "�
   hungry: "🍖", love: "💕", excited: "🌟", proud: "✨", idle: "" };
 
 /* ---------- 집 ---------- */
+/* 집 단계별 색 팔레트 (CSS 변수로 넘겨 벽지·나무결 패턴과 합성).
+   assets/room_0.png … 이 있으면 배경 그림으로 자동 교체됨 */
 const HOUSES = [
-  { name: "작은 둥지", need: 0, wall: "linear-gradient(#f2e3c8,#eeD9b8)", floor: "linear-gradient(#dcc39b,#cbab7e)", slots: 2, petCap: 2 },
-  { name: "아늑한 오두막", need: 25, wall: "linear-gradient(#ffe9c7,#ffd9a1)", floor: "linear-gradient(#c98f52,#a96f3b)", slots: 4, petCap: 4 },
-  { name: "포근한 벽돌집", need: 80, wall: "linear-gradient(#ffe2ec,#ffd0e0)", floor: "linear-gradient(#b98d5f,#9a744c)", slots: 6, petCap: 6 },
+  { name: "작은 둥지",     need: 0,  wall: "#f2e3c8", wall2: "#e6d2ac", floor: "#d3b489", floor2: "#b8946a", slots: 2, petCap: 2 },
+  { name: "아늑한 오두막", need: 25, wall: "#ffe9c7", wall2: "#f7d7a3", floor: "#c98f52", floor2: "#a56d38", slots: 4, petCap: 4 },
+  { name: "포근한 벽돌집", need: 80, wall: "#ffe2ec", wall2: "#fbcbdd", floor: "#c49a6c", floor2: "#a1794f", slots: 6, petCap: 6 },
 ];
+/* 방 배경 그림 감지 (있으면 CSS 방 대신 그림 사용) */
+const ROOM_ART = {};
+function loadRoomArt(lv) {
+  if (ROOM_ART[lv] !== undefined) return;
+  ROOM_ART[lv] = null;
+  const im = new Image();
+  im.onload = () => { ROOM_ART[lv] = im.src; if ($("#home").classList.contains("on")) renderHome(); };
+  im.src = `assets/room_${lv}.png`;
+}
 /* 알 상점: 마스터 무료 획득과 병행되는 구매 경로 (별 = 학습 재화) */
 const EGG_PRICE = { dino: 12, cat: 12, penguin: 12, dragon: 20, unicorn: 20 };
 const SHOP = [
@@ -844,9 +912,19 @@ function renderHome() {
   $("#homeStars").textContent = S.stars;
   $("#greet").textContent = S.settings.childName ? `안녕, ${voc(S.settings.childName)}! 👋` : "안녕! 👋";
   $("#houseBadge").textContent = `🏠 ${H.name}`;
-  $("#roomWall").style.background = H.wall;
-  $("#roomFloor").style.background = H.floor;
-  $("#room").classList.toggle("night", isNight());
+  // 색 팔레트를 CSS 변수로 → 벽지·나무결 패턴과 합성
+  const room = $("#room");
+  room.style.setProperty("--wall", H.wall);
+  room.style.setProperty("--wall2", H.wall2);
+  room.style.setProperty("--floor", H.floor);
+  room.style.setProperty("--floor2", H.floor2);
+  // 그림이 있으면 배경으로 사용하고 CSS 방은 숨김
+  loadRoomArt(lv);
+  const art = ROOM_ART[lv];
+  room.style.backgroundImage = art ? `url(${art})` : "";
+  $("#roomWall").style.opacity = art ? 0 : 1;
+  $("#roomFloor").style.opacity = art ? 0 : 1;
+  room.classList.toggle("night", isNight());
   $("#windowSky").textContent = isNight() ? "🌙" : "☀️";
   // 다음 집 진행도
   const next = HOUSES[lv + 1];
