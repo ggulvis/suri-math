@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#7c5cff">
+<title>수리수리 🦉</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --bg:#f3eeff; --card:#ffffff; --ink:#3a3160; --sub:#8a80b8;
+  --accent:#7c5cff; --accent2:#ffb347; --good:#4ecb71; --bad:#ff6b81;
+  --radius:24px; --shadow:0 6px 0 rgba(90,70,180,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{height:100%}
+body{
+  font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",sans-serif;
+  background:var(--bg); color:var(--ink); overflow:hidden;
+  display:flex; flex-direction:column;
+}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+.screen.on{display:flex}
+
+/* ---------- HOME ---------- */
+#home{align-items:center;justify-content:center;gap:20px;text-align:center}
+#home .owl{font-size:min(28vw,120px);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+#home h1{font-size:34px;letter-spacing:2px}
+#home .stars-line{font-size:18px;color:var(--sub)}
+.bigbtn{
+  border:none;border-radius:var(--radius);background:var(--accent);color:#fff;
+  font-size:26px;font-weight:800;padding:20px 48px;box-shadow:0 8px 0 #5a3fd6;
+  font-family:inherit;cursor:pointer;transition:transform .08s;
+}
+.bigbtn:active{transform:translateY(6px);box-shadow:0 2px 0 #5a3fd6}
+#parentBtn{position:absolute;top:max(12px,env(safe-area-inset-top));right:14px;background:none;border:none;font-size:13px;color:var(--sub);padding:10px;font-family:inherit}
+
+/* ---------- GAME ---------- */
+#game{gap:10px}
+.topbar{display:flex;align-items:center;gap:10px}
+.progress{flex:1;height:16px;background:#e2daff;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#a58bff);border-radius:99px;transition:width .4s}
+.starcount{font-weight:800;font-size:18px}
+#quitBtn{background:none;border:none;font-size:22px;color:var(--sub);font-family:inherit;padding:4px 8px}
+
+.qcard{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:16px;gap:14px;min-height:0;position:relative;
+}
+#speakBtn{
+  position:absolute;top:12px;right:12px;border:none;background:#f0eaff;
+  border-radius:99px;width:52px;height:52px;font-size:26px;cursor:pointer;
+}
+#qtext{font-size:clamp(17px,4.5vw,24px);font-weight:700;text-align:center;line-height:1.5;max-width:560px}
+.objzone{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:6px;max-width:560px;min-height:60px}
+.objzone .obj{font-size:clamp(30px,8vw,44px);position:relative;transition:transform .1s}
+.objzone .obj.gone{opacity:.25;filter:grayscale(1)}
+.objzone .obj .cnt{
+  position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;
+  font-size:13px;font-weight:800;border-radius:99px;min-width:20px;height:20px;
+  display:none;align-items:center;justify-content:center;padding:0 4px;
+}
+.objzone .obj.counted .cnt{display:flex}
+.objzone .obj.counted{transform:scale(1.15)}
+.grp{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;background:#faf7ff;border:3px solid #e2daff;border-radius:18px;padding:12px;cursor:pointer;max-width:46%}
+.grp .obj{font-size:clamp(26px,6vw,36px)}
+.vs{display:flex;gap:10px;align-items:stretch;justify-content:center;width:100%}
+.opline{font-size:clamp(26px,7vw,40px);font-weight:800;letter-spacing:2px}
+
+.choices{display:flex;gap:12px;justify-content:center;padding:4px 0}
+.choice{
+  border:none;border-radius:20px;background:#fff;color:var(--ink);
+  font-size:32px;font-weight:800;width:min(28vw,110px);height:min(22vw,88px);
+  box-shadow:0 6px 0 #d9d0f5;font-family:inherit;cursor:pointer;transition:transform .08s;
+}
+.choice:active{transform:translateY(4px);box-shadow:0 2px 0 #d9d0f5}
+.choice.correct{background:var(--good);color:#fff;box-shadow:0 6px 0 #2f9e52}
+.choice.wrong{background:var(--bad);color:#fff;box-shadow:0 6px 0 #d64a5f;animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#hint{font-size:16px;color:var(--sub);text-align:center;min-height:22px;font-weight:700}
+
+/* ---------- CELEBRATE ---------- */
+#done{align-items:center;justify-content:center;gap:18px;text-align:center}
+#done .owl{font-size:100px}
+#done h2{font-size:30px}
+#doneStars{font-size:26px;letter-spacing:4px}
+.confetti{position:absolute;top:-20px;font-size:24px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* ---------- PARENT ---------- */
+#parent{overflow-y:auto;gap:14px}
+#parent header{display:flex;align-items:center;justify-content:space-between}
+#parent h2{font-size:22px}
+.card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:16px}
+.card h3{font-size:15px;color:var(--sub);margin-bottom:10px}
+.insight{font-size:16px;line-height:1.6;font-weight:600}
+.insight+.insight{margin-top:10px;padding-top:10px;border-top:1px dashed #e2daff}
+.skillrow{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:14px}
+.skillrow .nm{width:110px;font-weight:700}
+.skillrow .bar{flex:1;height:12px;background:#efe9ff;border-radius:99px;overflow:hidden}
+.skillrow .bar>div{height:100%;background:var(--good);border-radius:99px}
+.skillrow .pct{width:74px;text-align:right;color:var(--sub);font-weight:700}
+.setrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:15px;font-weight:600}
+.seg{display:flex;background:#efe9ff;border-radius:12px;padding:3px}
+.seg button{border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;padding:7px 12px;border-radius:10px;color:var(--sub)}
+.seg button.on{background:var(--accent);color:#fff}
+.linkbtn{border:none;background:none;color:var(--bad);font-family:inherit;font-size:14px;font-weight:700;padding:8px 0}
+#backBtn{background:none;border:none;font-size:16px;color:var(--accent);font-weight:800;font-family:inherit;padding:8px}
+.empty{color:var(--sub);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen on" id="home">
+  <button id="parentBtn">부모님</button>
+  <div class="owl">🦉</div>
+  <h1>수리수리</h1>
+  <div class="stars-line">모은 별 ⭐ <b id="homeStars">0</b>개</div>
+  <button class="bigbtn" id="startBtn">모험 시작!</button>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="game">
+  <div class="topbar">
+    <button id="quitBtn">✕</button>
+    <div class="progress"><div id="pbar"></div></div>
+    <div class="starcount">⭐<span id="gStars">0</span></div>
+  </div>
+  <div class="qcard">
+    <button id="speakBtn">🔊</button>
+    <div id="qtext"></div>
+    <div id="stage"></div>
+    <div id="hint"></div>
+  </div>
+  <div class="choices" id="choices"></div>
+</div>
+
+<!-- DONE -->
+<div class="screen" id="done">
+  <div class="owl">🦉🎉</div>
+  <h2>오늘의 모험 완료!</h2>
+  <div id="doneStars"></div>
+  <div id="doneMsg" style="color:var(--sub);font-size:17px;font-weight:600"></div>
+  <button class="bigbtn" id="homeBtn">집으로</button>
+</div>
+
+<!-- PARENT -->
+<div class="screen" id="parent">
+  <header>
+    <h2>👨‍👩‍👧 부모님 리포트</h2>
+    <button id="backBtn">닫기 ✕</button>
+  </header>
+  <div class="card">
+    <h3>오늘의 한 문장</h3>
+    <div id="insights"></div>
+  </div>
+  <div class="card">
+    <h3>영역별 정답률 (최근 20문제)</h3>
+    <div id="skillbars"></div>
+  </div>
+  <div class="card">
+    <h3>설정</h3>
+    <div class="setrow"><span>숫자 범위</span>
+      <div class="seg" id="segRange">
+        <button data-v="5">5까지</button><button data-v="10">10까지</button><button data-v="20">20까지</button>
+      </div>
+    </div>
+    <div class="setrow"><span>한 판 문제 수</span>
+      <div class="seg" id="segLen">
+        <button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button>
+      </div>
+    </div>
+    <div class="setrow"><span>문제 읽어주기</span>
+      <div class="seg" id="segTts">
+        <button data-v="1">켜기</button><button data-v="0">끄기</button>
+      </div>
+    </div>
+    <button class="linkbtn" id="resetBtn">기록 전체 삭제</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   수리수리 — 7세(만5~6) 수학 앱
+   설계 원칙:
+   1) 모든 문제는 TTS 낭독 + 이모지 시각화 (글 못 읽어도 OK)
+   2) 보기(선택지) = 오개념별 함정 → 무엇을 골랐는지가 곧 진단
+   3) 오답 시 즉시 "같이 세어보기" 스캐폴드 → 두 번째 기회
+   4) 진단 누적 → 취약 오개념 겨냥 문제를 다음 출제에 주입
+   ===================================================================== */
+
+const $ = s => document.querySelector(s);
+const rnd = n => Math.floor(Math.random() * n);
+const pick = a => a[rnd(a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ---------- 저장소 ---------- */
+const KEY = "suri.v1";
+const defaultState = () => ({
+  stars: 0,
+  settings: { max: 10, len: 10, tts: 1 },
+  skills: {},          // {S1:{recent:[0/1...], n, c}}
+  miscon: {},          // {offByOne: n, opConfusion: n, reversal: n, story: n}
+  remediation: [],     // 다음 세션에 주입할 스킬 큐
+  log: [],             // 최근 200개 문제 기록
+});
+let S;
+try { S = Object.assign(defaultState(), JSON.parse(localStorage.getItem(KEY) || "{}")); }
+catch (e) { S = defaultState(); }
+const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+
+/* ---------- TTS ---------- */
+let koVoice = null;
+function loadVoices() {
+  const vs = speechSynthesis.getVoices();
+  koVoice = vs.find(v => v.lang.startsWith("ko") && v.name.includes("Yuna")) ||
+            vs.find(v => v.lang.startsWith("ko")) || null;
+}
+if ("speechSynthesis" in window) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+function speak(text) {
+  if (!S.settings.tts || !("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  if (koVoice) u.voice = koVoice;
+  u.lang = "ko-KR"; u.rate = 0.85; u.pitch = 1.1;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- 효과음 (WebAudio) ---------- */
+let AC = null;
+function tone(freq, dur, type, when = 0, gain = 0.15) {
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(gain, AC.currentTime + when);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + when + dur);
+    o.connect(g); g.connect(AC.destination);
+    o.start(AC.currentTime + when); o.stop(AC.currentTime + when + dur);
+  } catch (e) {}
+}
+const sfxGood = () => { tone(660, .12, "sine"); tone(880, .18, "sine", .1); tone(1320, .25, "sine", .2); };
+const sfxBad = () => tone(180, .3, "sawtooth", 0, 0.08);
+const sfxTap = () => tone(520, .06, "sine", 0, 0.1);
+
+/* ---------- 스킬 정의 ---------- */
+const SKILLS = {
+  S1: { name: "수 세기",   emoji: "🔢" },
+  S2: { name: "더하기",    emoji: "➕" },
+  S3: { name: "빼기",      emoji: "➖" },
+  S4: { name: "비교하기",  emoji: "⚖️" },
+  S5: { name: "이야기 문제", emoji: "📖" },
+};
+const OBJECTS = [
+  { e: "🍎", n: "사과" }, { e: "🍬", n: "사탕" }, { e: "🍓", n: "딸기" },
+  { e: "🍪", n: "쿠키" }, { e: "🎈", n: "풍선" }, { e: "🥚", n: "공룡알" },
+  { e: "🚗", n: "자동차" }, { e: "🌟", n: "별" },
+];
+const ANIMALS = [
+  { e: "🐟", n: "물고기" }, { e: "🐦", n: "새" }, { e: "🐶", n: "강아지" }, { e: "🐱", n: "고양이" },
+];
+const FLYERS = [{ e: "🐦", n: "새" }, { e: "🦋", n: "나비" }];
+const NAMES = ["수리", "토토", "라라", "코코"];
+
+/* ---------- 문제 생성 ----------
+   각 문제: {skill, text, speakText, objs|groups, op, answer, choices:[{v,tag}]}
+   tag = 이 오답을 골랐을 때의 오개념 코드 */
+function makeChoices(answer, wrongs) {
+  // wrongs: [{v,tag}] — answer와 겹치거나 음수/중복 제거 후 2개 채움
+  const seen = new Set([answer]);
+  const out = [{ v: answer, tag: null }];
+  for (const w of wrongs) {
+    if (w.v >= 0 && !seen.has(w.v)) { seen.add(w.v); out.push(w); }
+    if (out.length === 3) break;
+  }
+  let fill = answer + 3;
+  while (out.length < 3) {
+    if (!seen.has(fill) && fill >= 0) { seen.add(fill); out.push({ v: fill, tag: "other" }); }
+    fill = fill >= 0 ? fill + 1 : 1;
+  }
+  return shuffle(out);
+}
+
+function genCounting(max) {
+  const n = 2 + rnd(Math.min(max, 9) - 1); // 2..max(≤9)
+  const o = pick(OBJECTS);
+  return {
+    skill: "S1", op: "count",
+    text: `${o.n}가 몇 개일까요?`,
+    speakText: `${o.n}가 몇 개인지 세어 볼까요?`,
+    objs: [{ e: o.e, n }],
+    answer: n,
+    choices: makeChoices(n, shuffle([
+      { v: n - 1, tag: "offByOne" }, { v: n + 1, tag: "offByOne" }, { v: n + 2, tag: "other" },
+    ])),
+  };
+}
+function genAdd(max) {
+  const a = 1 + rnd(max - 2), b = 1 + rnd(max - a - 1 || 1);
+  const o = pick(OBJECTS);
+  return {
+    skill: "S2", op: "add", a, b,
+    text: `${a} + ${b} = ?`,
+    speakText: `${a} 더하기 ${b}는 얼마일까요?`,
+    objs: [{ e: o.e, n: a }, { e: o.e, n: b, sep: true }],
+    answer: a + b,
+    choices: makeChoices(a + b, shuffle([
+      { v: a + b - 1, tag: "offByOne" }, { v: a + b + 1, tag: "offByOne" },
+      { v: Math.abs(a - b), tag: "opConfusion" },
+    ])),
+  };
+}
+function genSub(max) {
+  const a = 2 + rnd(max - 1), b = 1 + rnd(a - 1);
+  const o = pick(OBJECTS);
+  return {
+    skill: "S3", op: "sub", a, b,
+    text: `${a} - ${b} = ?`,
+    speakText: `${a} 빼기 ${b}는 얼마일까요?`,
+    objs: [{ e: o.e, n: a, remove: b }],
+    answer: a - b,
+    choices: makeChoices(a - b, shuffle([
+      { v: a - b - 1, tag: "offByOne" }, { v: a - b + 1, tag: "offByOne" },
+      { v: a + b, tag: "opConfusion" },
+    ])),
+  };
+}
+function genCompare(max) {
+  let a = 2 + rnd(Math.min(max, 8) - 1), b = 2 + rnd(Math.min(max, 8) - 1);
+  if (a === b) b = b > 2 ? b - 1 : b + 1;
+  const o1 = pick(OBJECTS); let o2 = pick(OBJECTS);
+  while (o2.e === o1.e) o2 = pick(OBJECTS);
+  return {
+    skill: "S4", op: "compare", a, b,
+    text: "어느 쪽이 더 많을까요? 많은 쪽을 눌러요!",
+    speakText: `${o1.n}와 ${o2.n}, 어느 쪽이 더 많은지 눌러 볼까요?`,
+    groups: [{ e: o1.e, n: a }, { e: o2.e, n: b }],
+    answer: a > b ? 0 : 1,
+  };
+}
+/* 이야기 문제 — 템플릿 뱅크 (ollama 배치 생성으로 확장, scripts/gen-problems.mjs) */
+let STORY_TPL = [
+  { op: "add", t: "{name}가 {obj} {a}개를 가지고 있었어요. 친구가 {b}개를 더 주었어요. 이제 모두 몇 개일까요?" },
+  { op: "add", t: "바구니에 {obj} {a}개가 있어요. {name}가 {b}개를 더 담았어요. 바구니에는 모두 몇 개일까요?" },
+  { op: "sub", t: "{name}가 {obj} {a}개를 가지고 있었는데, {b}개를 먹어 버렸어요. 몇 개 남았을까요?" },
+  { op: "sub", t: "나뭇가지에 새가 {a}마리 앉아 있었어요. {b}마리가 날아갔어요. 몇 마리 남았을까요?", fixObj: { e: "🐦", n: "새" } },
+  { op: "sub", t: "풍선 {a}개 중에서 {b}개가 펑 터졌어요. 몇 개 남았을까요?", fixObj: { e: "🎈", n: "풍선" } },
+];
+function genStory(max) {
+  const tpl = pick(STORY_TPL);
+  // 단위·동작에 맞는 물건만: '날아'→나는 동물, '마리'→동물, 그 외→사물
+  const o = tpl.fixObj || pick(/날아|날았/.test(tpl.t) ? FLYERS : tpl.t.includes("마리") ? ANIMALS : OBJECTS);
+  let a, b, answer;
+  if (tpl.op === "add") { a = 1 + rnd(max - 2); b = 1 + rnd(max - a - 1 || 1); answer = a + b; }
+  else { a = 2 + rnd(max - 1); b = 1 + rnd(a - 1); answer = a - b; }
+  // 받침 유무에 따라 조사(이/가, 은/는, 을/를) 자동 교정
+  const hasJong = w => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; };
+  const fill = (t, slot, word) => t
+    .replace(new RegExp(`\\{${slot}\\}[이가]`, "g"), word + (hasJong(word) ? "이" : "가"))
+    .replace(new RegExp(`\\{${slot}\\}[은는]`, "g"), word + (hasJong(word) ? "은" : "는"))
+    .replace(new RegExp(`\\{${slot}\\}[을를]`, "g"), word + (hasJong(word) ? "을" : "를"))
+    .replace(new RegExp(`\\{${slot}\\}`, "g"), word);
+  const text = fill(fill(tpl.t, "name", pick(NAMES)), "obj", o.n)
+                .replace("{a}", a).replace("{b}", b);
+  const wrongTag = "story";
+  const wrongs = tpl.op === "add"
+    ? [{ v: Math.abs(a - b), tag: "opConfusion" }, { v: answer - 1, tag: "offByOne" }, { v: answer + 1, tag: "offByOne" }]
+    : [{ v: a + b, tag: "opConfusion" }, { v: answer - 1, tag: "offByOne" }, { v: answer + 1, tag: "offByOne" }];
+  return {
+    skill: "S5", op: tpl.op, a, b, story: true,
+    text, speakText: text,
+    objs: tpl.op === "add" ? [{ e: o.e, n: a }, { e: o.e, n: b, sep: true }] : [{ e: o.e, n: a, remove: b }],
+    hideObjsUntilWrong: true,   // 처음엔 듣기만 → 틀리면 그림 등장
+    answer,
+    choices: makeChoices(answer, shuffle(wrongs)),
+  };
+}
+const GEN = { S1: genCounting, S2: genAdd, S3: genSub, S4: genCompare, S5: genStory };
+
+/* ---------- 적응 출제 ----------
+   - 마스터 기준: 최근 5개 중 4개 정답
+   - 커리큘럼 순서 S1→S2→S3→S4→S5, 프론티어(아직 마스터 못한 첫 스킬) 중심
+   - 60% 프론티어 / 25% 복습(마스터한 것 중 랜덤) / 15% 다음 스킬 맛보기
+   - remediation 큐가 있으면 최우선 */
+const ORDER = ["S1", "S2", "S3", "S4", "S5"];
+function skillStat(k) {
+  const s = S.skills[k] || { recent: [], n: 0, c: 0 };
+  return s;
+}
+function mastered(k) {
+  const r = skillStat(k).recent;
+  return r.length >= 5 && r.slice(-5).reduce((x, y) => x + y, 0) >= 4;
+}
+function frontier() {
+  for (const k of ORDER) if (!mastered(k)) return k;
+  return "S5";
+}
+function pickSkill() {
+  if (S.remediation.length) return S.remediation.shift();
+  const f = frontier();
+  const r = Math.random();
+  if (r < 0.6) return f;
+  const done = ORDER.filter(mastered);
+  if (r < 0.85 && done.length) return pick(done);
+  const idx = Math.min(ORDER.indexOf(f) + 1, ORDER.length - 1);
+  return Math.random() < 0.5 ? ORDER[idx] : f;
+}
+function genNext() {
+  const k = pickSkill();
+  return GEN[k](S.settings.max);
+}
+
+/* ---------- 진단 → 처방 ---------- */
+function recordAnswer(q, correct, chosenTag, firstTry) {
+  const st = skillStat(q.skill);
+  st.n++; if (correct && firstTry) st.c++;
+  st.recent.push(correct && firstTry ? 1 : 0);
+  if (st.recent.length > 20) st.recent.shift();
+  S.skills[q.skill] = st;
+
+  if (!correct || !firstTry) {
+    const tag = chosenTag || "other";
+    S.miscon[tag] = (S.miscon[tag] || 0) + 1;
+    // 처방: 같은 스킬 1개 + 오개념 겨냥 스킬 1개를 큐에 주입
+    S.remediation.push(q.skill);
+    if (tag === "opConfusion") S.remediation.push(q.op === "add" ? "S3" : "S2");
+    if (tag === "offByOne") S.remediation.push("S1");
+    if (S.remediation.length > 4) S.remediation = S.remediation.slice(-4);
+  }
+  S.log.push({ ts: Date.now(), skill: q.skill, op: q.op, correct: correct && firstTry ? 1 : 0, tag: chosenTag || null });
+  if (S.log.length > 200) S.log.shift();
+  save();
+}
+
+/* ---------- 게임 진행 ---------- */
+let session = null;
+function startSession() {
+  session = { i: 0, total: S.settings.len, stars: 0, q: null, tries: 0, lock: false };
+  showScreen("game");
+  nextQuestion();
+}
+function nextQuestion() {
+  if (session.i >= session.total) return endSession();
+  session.q = genNext();
+  session.tries = 0; session.lock = false; session.wrongTag = null;
+  renderQuestion(session.q);
+  $("#pbar").style.width = (session.i / session.total * 100) + "%";
+  $("#gStars").textContent = session.stars;
+  setTimeout(() => speak(session.q.speakText), 300);
+}
+function renderQuestion(q) {
+  $("#qtext").textContent = q.text;
+  $("#hint").textContent = "";
+  const stage = $("#stage");
+  stage.innerHTML = "";
+  const choicesEl = $("#choices");
+  choicesEl.innerHTML = "";
+
+  if (q.op === "compare") {
+    const vs = document.createElement("div");
+    vs.className = "vs";
+    q.groups.forEach((g, gi) => {
+      const el = document.createElement("div");
+      el.className = "grp";
+      el.innerHTML = Array.from({ length: g.n }, () => `<span class="obj">${g.e}</span>`).join("");
+      el.onclick = () => onCompareTap(gi, el);
+      vs.appendChild(el);
+    });
+    stage.appendChild(vs);
+    return;
+  }
+
+  // 물건 그림 (이야기 문제는 처음엔 숨김 — 듣기 훈련)
+  const zone = document.createElement("div");
+  zone.className = "objzone";
+  zone.id = "objzone";
+  let idx = 0;
+  q.objs.forEach((grp, gi) => {
+    if (gi > 0 && grp.sep) {
+      const plus = document.createElement("span");
+      plus.className = "opline"; plus.textContent = "+";
+      zone.appendChild(plus);
+    }
+    for (let i = 0; i < grp.n; i++) {
+      const sp = document.createElement("span");
+      sp.className = "obj";
+      sp.innerHTML = `${grp.e}<span class="cnt"></span>`;
+      if (grp.remove && i >= grp.n - grp.remove) sp.dataset.removable = "1";
+      sp.dataset.i = idx++;
+      zone.appendChild(sp);
+    }
+  });
+  if (q.hideObjsUntilWrong) zone.style.display = "none";
+  stage.appendChild(zone);
+
+  q.choices.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "choice"; b.textContent = c.v;
+    b.onclick = () => onChoice(c, b);
+    choicesEl.appendChild(b);
+  });
+}
+function onCompareTap(gi, el) {
+  if (session.lock) return;
+  const q = session.q;
+  const correct = gi === q.answer;
+  if (correct) {
+    session.lock = true;
+    el.style.borderColor = "var(--good)";
+    handleCorrect();
+  } else {
+    el.style.borderColor = "var(--bad)";
+    handleWrong({ tag: "compare" }, null);
+  }
+}
+function onChoice(c, btn) {
+  if (session.lock) return;
+  const q = session.q;
+  if (c.v === q.answer) {
+    session.lock = true;
+    btn.classList.add("correct");
+    handleCorrect();
+  } else {
+    btn.classList.add("wrong");
+    btn.disabled = true;
+    handleWrong(c, btn);
+  }
+}
+function handleCorrect() {
+  const q = session.q, firstTry = session.tries === 0;
+  sfxGood();
+  speak(firstTry ? pick(["딩동댕! 정답이에요!", "우와, 맞았어요!", "정답! 최고예요!"]) : "그렇지! 이제 맞았어요!");
+  recordAnswer(q, true, session.wrongTag || null, firstTry);
+  if (firstTry) session.stars++;
+  else if (session.tries === 1) session.stars += 0; // 재도전 성공은 별 없이 칭찬만
+  S.stars += firstTry ? 1 : 0;
+  save();
+  $("#gStars").textContent = session.stars;
+  session.i++;
+  setTimeout(nextQuestion, 1400);
+}
+function handleWrong(c, btn) {
+  const q = session.q;
+  session.tries++;
+  session.wrongTag = c.tag;
+  sfxBad();
+  if (session.tries === 1) {
+    // 스캐폴드: 그림 보여주고 같이 세기 유도
+    const zone = $("#objzone");
+    if (zone) zone.style.display = "";
+    $("#hint").textContent = "괜찮아! 그림을 하나씩 눌러서 세어 보자 👆";
+    speak("괜찮아요! 그림을 하나씩 누르면서 같이 세어 볼까요?");
+    enableCountingScaffold(q);
+  } else {
+    // 두 번째 오답: 정답 공개 + 세기 애니메이션
+    session.lock = true;
+    revealAnswer(q);
+  }
+}
+function enableCountingScaffold(q) {
+  const zone = $("#objzone");
+  if (!zone) return;
+  let count = 0;
+  // 빼기: 없어지는 것 먼저 지우는 연출
+  if (q.op === "sub" || (q.story && q.op === "sub")) {
+    zone.querySelectorAll("[data-removable]").forEach((el, i) => {
+      setTimeout(() => { el.classList.add("gone"); sfxTap(); }, 400 + i * 350);
+    });
+  }
+  zone.querySelectorAll(".obj").forEach(el => {
+    el.onclick = () => {
+      if (el.classList.contains("counted") || el.classList.contains("gone")) return;
+      count++;
+      el.classList.add("counted");
+      el.querySelector(".cnt").textContent = count;
+      sfxTap();
+    };
+  });
+}
+function revealAnswer(q) {
+  $("#hint").textContent = `정답은 ${q.op === "compare" ? "더 많은 쪽" : q.answer}이었어요!`;
+  speak(q.op === "compare" ? "이쪽이 더 많았어요! 다음에 다시 해 보자!" : `정답은 ${q.answer}이었어요. 다음에 다시 해 보자!`);
+  recordAnswer(q, false, session.wrongTag || null, false);
+  document.querySelectorAll(".choice").forEach(b => {
+    if (Number(b.textContent) === q.answer) b.classList.add("correct");
+  });
+  session.i++;
+  setTimeout(nextQuestion, 2200);
+}
+function endSession() {
+  showScreen("done");
+  $("#doneStars").textContent = "⭐".repeat(Math.max(session.stars, 0)) || "💪";
+  const perfect = session.stars === session.total;
+  $("#doneMsg").textContent = perfect ? "완벽해! 수리가 깜짝 놀랐어요!" :
+    session.stars >= session.total * 0.7 ? "정말 잘했어요!" : "끝까지 해낸 게 제일 멋져요!";
+  speak(perfect ? "완벽해요! 모두 맞혔어요!" : "오늘의 모험 완료! 정말 잘했어요!");
+  confettiRain();
+  $("#homeStars").textContent = S.stars;
+}
+function confettiRain() {
+  const em = ["🎉", "⭐", "🎊", "💜", "🧡"];
+  for (let i = 0; i < 24; i++) {
+    const s = document.createElement("div");
+    s.className = "confetti";
+    s.textContent = pick(em);
+    s.style.left = rnd(100) + "vw";
+    s.style.animationDuration = (2 + Math.random() * 2) + "s";
+    s.style.animationDelay = (Math.random() * 1.2) + "s";
+    $("#done").appendChild(s);
+    setTimeout(() => s.remove(), 5000);
+  }
+}
+
+/* ---------- 부모 리포트 ---------- */
+const MISCON_TEXT = {
+  offByOne: {
+    t: "정답에서 1만큼 차이 나게 답하는 경우가 잦아요. 아직 손가락·물건을 하나씩 짚으며 세는 단계라 자연스러운 실수예요.",
+    tip: "오늘 저녁, 과자 6개를 놓고 \"하나, 둘…\" 같이 세어 본 뒤 2개 먹고 \"몇 개 남았지?\" 물어봐 주세요.",
+  },
+  opConfusion: {
+    t: "빼기 문제를 더하기로(또는 반대로) 계산하는 모습이 보여요. '더하면 늘어나고 빼면 줄어든다'는 방향 감각을 잡는 중이에요.",
+    tip: "물건으로 직접 보여주세요 — 사탕 5개에서 2개를 진짜로 치우면서 \"줄었네! 빼기야\"라고 말해 주세요.",
+  },
+  story: {
+    t: "계산 자체보다 이야기를 듣고 상황을 파악하는 걸 어려워해요. 듣기 집중력과 언어 이해가 크는 중이에요.",
+    tip: "문제를 다시 들려주고 \"무슨 일이 일어났어?\"를 먼저 물어봐 주세요. 답보다 상황 설명이 먼저예요.",
+  },
+  compare: {
+    t: "많고 적음 비교에서 헷갈려해요. 개수가 아니라 크기·퍼진 정도로 판단하는 시기일 수 있어요.",
+    tip: "줄 맞춰 나란히 놓고 비교하게 해 주세요 — 하나씩 짝지어 보면 금방 알아차려요.",
+  },
+  other: { t: "", tip: "" },
+};
+function renderParent() {
+  // 오늘의 한 문장: 최근 30문제 기준 최다 오개념
+  const recent = S.log.slice(-30);
+  const counts = {};
+  recent.forEach(l => { if (l.tag && !l.correct) counts[l.tag] = (counts[l.tag] || 0) + 1; });
+  const sorted = Object.entries(counts).filter(([k]) => MISCON_TEXT[k] && MISCON_TEXT[k].t).sort((a, b) => b[1] - a[1]);
+  const box = $("#insights");
+  box.innerHTML = "";
+  if (!recent.length) {
+    box.innerHTML = `<div class="empty">아직 기록이 없어요. 아이와 첫 모험을 시작해 보세요!</div>`;
+  } else if (!sorted.length) {
+    const acc = Math.round(recent.reduce((a, l) => a + l.correct, 0) / recent.length * 100);
+    box.innerHTML = `<div class="insight">👍 최근 정답률 ${acc}% — 특별한 취약 패턴 없이 잘하고 있어요.${acc >= 85 ? " 설정에서 숫자 범위를 넓혀 볼 때예요!" : ""}</div>`;
+  } else {
+    sorted.slice(0, 2).forEach(([k, n]) => {
+      const m = MISCON_TEXT[k];
+      box.innerHTML += `<div class="insight">🔍 ${m.t}<br><br>💬 <b>${m.tip}</b></div>`;
+    });
+  }
+  // 스킬바
+  const sb = $("#skillbars");
+  sb.innerHTML = "";
+  ORDER.forEach(k => {
+    const st = skillStat(k);
+    const r = st.recent;
+    if (!r.length) {
+      sb.innerHTML += `<div class="skillrow"><span class="nm">${SKILLS[k].emoji} ${SKILLS[k].name}</span><div class="bar"><div style="width:0"></div></div><span class="pct">아직 전</span></div>`;
+      return;
+    }
+    const acc = Math.round(r.reduce((a, b) => a + b, 0) / r.length * 100);
+    sb.innerHTML += `<div class="skillrow"><span class="nm">${SKILLS[k].emoji} ${SKILLS[k].name}</span><div class="bar"><div style="width:${acc}%"></div></div><span class="pct">${acc}% (${r.length})</span></div>`;
+  });
+  // 설정 세그먼트
+  syncSeg("#segRange", S.settings.max);
+  syncSeg("#segLen", S.settings.len);
+  syncSeg("#segTts", S.settings.tts);
+}
+function syncSeg(sel, val) {
+  document.querySelectorAll(sel + " button").forEach(b =>
+    b.classList.toggle("on", Number(b.dataset.v) === Number(val)));
+}
+$("#segRange").onclick = e => { if (e.target.dataset.v) { S.settings.max = +e.target.dataset.v; save(); syncSeg("#segRange", S.settings.max); } };
+$("#segLen").onclick = e => { if (e.target.dataset.v) { S.settings.len = +e.target.dataset.v; save(); syncSeg("#segLen", S.settings.len); } };
+$("#segTts").onclick = e => { if (e.target.dataset.v) { S.settings.tts = +e.target.dataset.v; save(); syncSeg("#segTts", S.settings.tts); } };
+$("#resetBtn").onclick = () => {
+  if (confirm("모든 학습 기록과 별을 삭제할까요?")) {
+    S = defaultState(); save();
+    renderParent(); $("#homeStars").textContent = 0;
+  }
+};
+
+/* ---------- 화면 전환 ---------- */
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
+  $("#" + id).classList.add("on");
+}
+$("#startBtn").onclick = () => { tone(660, .1, "sine"); startSession(); };
+$("#quitBtn").onclick = () => { speechSynthesis.cancel && speechSynthesis.cancel(); showScreen("home"); $("#homeStars").textContent = S.stars; };
+$("#homeBtn").onclick = () => showScreen("home");
+$("#speakBtn").onclick = () => session && speak(session.q.speakText);
+$("#backBtn").onclick = () => showScreen("home");
+
+/* 부모 버튼: 2초 길게 누르기 (아이 오터치 방지) */
+let pTimer = null;
+const pBtn = $("#parentBtn");
+["touchstart", "mousedown"].forEach(ev => pBtn.addEventListener(ev, e => {
+  e.preventDefault();
+  pBtn.textContent = "꾹 누르는 중…";
+  pTimer = setTimeout(() => { pBtn.textContent = "부모님"; renderParent(); showScreen("parent"); }, 2000);
+}));
+["touchend", "mouseup", "mouseleave", "touchcancel"].forEach(ev => pBtn.addEventListener(ev, () => {
+  clearTimeout(pTimer); pBtn.textContent = "부모님";
+}));
+
+/* ---------- 외부 문항 뱅크 로드 (ollama 배치 생성물) ---------- */
+fetch("problems.json").then(r => r.ok ? r.json() : null).then(d => {
+  if (d && Array.isArray(d.storyTemplates) && d.storyTemplates.length) {
+    STORY_TPL = STORY_TPL.concat(d.storyTemplates);
+  }
+}).catch(() => {});
+
+/* ---------- init ---------- */
+$("#homeStars").textContent = S.stars;
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>
