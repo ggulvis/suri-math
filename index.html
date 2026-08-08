@@ -414,7 +414,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "8";
+const APP_VERSION = "9";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -472,9 +472,50 @@ function loadVoices() {
             ens.find(v => /Samantha|Karen|Daniel/.test(v.name)) || ens[0] || null;
 }
 if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+
+/* ---------- 사전 렌더 음성 (신경망 TTS로 미리 구운 mp3) ----------
+   고정 문장은 파일 재생 → iOS 내장 음성 한계를 넘음.
+   manifest에 없는 문장(문제 낭독 등)은 speechSynthesis로 폴백. */
+let VOICE_MAP = null, curAudio = null;
+fetch("assets/voice/manifest.json").then(r => r.ok ? r.json() : null).then(d => {
+  if (d && d.files) VOICE_MAP = d;
+}).catch(() => {});
+function stopVoice() {
+  if (curAudio) { try { curAudio.pause(); } catch (e) {} curAudio = null; }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+}
+/* iOS는 사용자 제스처 없이 오디오 재생을 막는다 → 첫 터치에서 채널을 열어둔다 */
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  try {
+    const a = new Audio("assets/voice/0001.mp3");
+    a.volume = 0;
+    a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
+  } catch (e) {}
+  if (AC && AC.state === "suspended") AC.resume().catch(() => {});
+}
+["pointerdown", "touchstart"].forEach(ev =>
+  document.addEventListener(ev, unlockAudio, { once: true, passive: true }));
 function speak(text, lang = "ko", opts = {}) {
-  if (!S.settings.tts || !("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
+  if (!S.settings.tts) return;
+  stopVoice();
+  // 1) 사전 렌더 파일 우선 (한국어 고정 문장)
+  if (lang === "ko" && VOICE_MAP && VOICE_MAP.files) {
+    const f = VOICE_MAP.files[String(text).trim()];
+    if (f) {
+      const a = new Audio("assets/voice/" + f);
+      a.volume = 1;
+      curAudio = a;
+      a.play().catch(() => { curAudio = null; synth(text, lang, opts); });
+      return;
+    }
+  }
+  synth(text, lang, opts);
+}
+function synth(text, lang, opts = {}) {
+  if (!("speechSynthesis" in window)) return;
   const u = new SpeechSynthesisUtterance(text);
   const v = lang === "en" ? enVoice : koVoice;
   if (v) u.voice = v;
@@ -1698,9 +1739,11 @@ function renderParent() {
     o.textContent = "음성 없음";
     sel.appendChild(o);
   }
-  $("#voiceNow").textContent = koVoice
-    ? `적용 중: ${koVoice.name} (${vQualityLabel[vQuality(koVoice)]})`
-    : "적용 중: 한국어 음성 없음";
+  const pre = VOICE_MAP && VOICE_MAP.count
+    ? `🎙 대사·칭찬: 사전 녹음 ${VOICE_MAP.count}개 (고품질)` : "🎙 대사: 기기 합성";
+  $("#voiceNow").innerHTML = pre + "<br>" + (koVoice
+    ? `📖 문제 낭독: ${koVoice.name} (${vQualityLabel[vQuality(koVoice)]})`
+    : "📖 문제 낭독: 한국어 음성 없음");
 }
 function syncSeg(sel, val) {
   document.querySelectorAll(sel + " button").forEach(b => b.classList.toggle("on", String(b.dataset.v) === String(val)));
@@ -1739,7 +1782,7 @@ function showScreen(id) {
   if (id === "home") renderHome();
 }
 $("#startBtn").onclick = () => { tone(660, .1, "sine"); startSession(); };
-$("#quitBtn").onclick = () => { speechSynthesis.cancel && speechSynthesis.cancel(); session = null; showScreen("home"); };
+$("#quitBtn").onclick = () => { stopVoice(); session = null; showScreen("home"); };
 $("#homeBtn").onclick = () => showScreen("home");
 $("#speakBtn").onclick = () => session && speak(session.q.speakText, session.q.lang);
 $("#backBtn").onclick = () => showScreen("home");
