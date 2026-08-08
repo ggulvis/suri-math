@@ -1,5 +1,5 @@
 /* 수리수리 오프라인 캐시 — 배포마다 VERSION 올리면 자동 갱신 */
-const VERSION = "v9";
+const VERSION = "v10";
 const CACHE = "suri-" + VERSION;
 /* 필수 셸만 프리캐시. 음성 mp3(7MB)·표정 아트는 network-first로 자연 캐시되게 둔다
    (addAll은 하나만 실패해도 설치 전체가 실패하므로 목록을 짧게 유지) */

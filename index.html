@@ -414,7 +414,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "9";
+const APP_VERSION = "10";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -435,6 +435,9 @@ let S;
 try { S = Object.assign(defaultState(), JSON.parse(localStorage.getItem(KEY) || "{}")); }
 catch (e) { S = defaultState(); }
 S.settings = Object.assign(defaultState().settings, S.settings);
+/* 사전 녹음이 이 이름으로 구워져 있어 기본값을 맞춘다.
+   부모가 다른 이름으로 바꾸면 해당 대사만 기기 합성으로 폴백(틀린 이름을 부르지 않음). */
+if (!S.settings.childName) S.settings.childName = "하온";
 if (S.starsEarned === undefined || S.starsEarned < S.stars) S.starsEarned = S.stars;
 const save = () => localStorage.setItem(KEY, JSON.stringify(S));
 
