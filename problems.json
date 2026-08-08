@@ -45,41 +45,6 @@
       "op": "add",
       "ko": "{name}이(가) {a}개의 {obj}를 갖고 있어요. 친구가 {b}개를 더 줬어요. 지금 몇 개일까요?",
       "en": "{name} has {aobj}. They get {b} more. How many are there now?"
-    },
-    {
-      "op": "sub",
-      "ko": "{name}이(가) {a}개의 {obj}를 먹었어. 친구에게 {b}개를 줬지. 지금 몇 개 남았을까요?",
-      "en": "{name} eats {aobj}. They share {b} with a friend. How many are left?"
-    },
-    {
-      "op": "add",
-      "ko": "{name}이(가) {a}마리의 {obj}를 봤어. 또 {b}마리가 옆에 와. 총 몇 마리일까요?",
-      "en": "{name} sees {aobj}. Then {b} more come over. How many in all?"
-    },
-    {
-      "op": "sub",
-      "ko": "{name}이(가) {a}개의 {obj}를 넣었어. {b}개를 꺼냈지. 상자에 지금 몇 개 있을까요?",
-      "en": "{name} puts {aobj} in a box. They take {b} out to play. How many are left?"
-    },
-    {
-      "op": "add",
-      "ko": "{name}이(가) {a}개의 {obj}를 만들었어. 선생님이 {b}개를 더 주셨지. 총 몇 개일까요?",
-      "en": "{name} makes {aobj}. The teacher gives {b} more. How many are there altogether?"
-    },
-    {
-      "op": "sub",
-      "ko": "{name}이(가) {a}개의 {obj}를 가져왔어. {b}개를 친구에게 줬지. 지금 몇 개 남았을까요?",
-      "en": "{name} brings {aobj}. They give {b} to a friend. How many are left now?"
-    },
-    {
-      "op": "add",
-      "ko": "{name}이(가) {a}개의 {obj}를 놓았어. 엄마가 {b}개를 더 넣었지. 지금 총 몇 개일까요?",
-      "en": "{name} places {aobj} on a plate. Mom adds {b} more. How many are there now?"
-    },
-    {
-      "op": "sub",
-      "ko": "{name}이(가) {a}개의 {obj}를 그렸어. {b}개를 지웠지. 지금 몇 개 있을까요?",
-      "en": "{name} draws {aobj}. They erase {b} of them. How many are still there?"
     }
   ]
 }

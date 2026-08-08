@@ -33,10 +33,43 @@ body{
 
 /* ---------- HOME = 집 ---------- */
 #home{gap:10px}
-.hometop{display:flex;align-items:center;gap:8px}
-#homeStarsBox{font-weight:800;font-size:18px}
-#houseName{flex:1;text-align:center;font-weight:800;font-size:16px;color:var(--sub)}
+.hometop{display:flex;align-items:center;gap:8px;max-width:820px;width:100%;margin:0 auto}
+#greet{font-weight:800;font-size:20px}
+#homeStarsBox{font-weight:800;font-size:18px;background:var(--card);border-radius:99px;padding:6px 14px;box-shadow:var(--shadow)}
 #parentBtn{background:none;border:none;font-size:13px;color:var(--sub);padding:8px;font-family:inherit}
+#homeMid{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;max-width:820px;width:100%;margin:0 auto}
+.carebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{
+  border:none;border-radius:99px;background:var(--card);box-shadow:var(--shadow);
+  font-family:inherit;font-size:14px;font-weight:800;color:var(--ink);padding:9px 14px;cursor:pointer;
+}
+.chip:active{transform:translateY(2px)}
+.chip:disabled{opacity:.4}
+#houseProg{font-size:12px;color:var(--sub);font-weight:700;margin-left:auto;text-align:right}
+.dash{display:grid;grid-template-columns:1fr auto;gap:10px}
+.dcard{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px}
+.dcard.dcenter{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:110px}
+.dtitle{font-size:13px;font-weight:800;color:var(--sub);margin-bottom:6px}
+.dbig{font-size:22px;font-weight:800}
+.dbar{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:12px}
+.dbar .dnm{width:76px;font-weight:700;color:var(--sub)}
+.dbar .bar{flex:1;height:10px;background:#efe9ff;border-radius:99px;overflow:hidden}
+.dbar .bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#a58bff);border-radius:99px;transition:width .5s}
+.dbar .dct{width:20px;text-align:right;font-weight:800;color:var(--sub)}
+#bottomNav{display:flex;gap:8px;max-width:820px;width:100%;margin:0 auto}
+.nav{
+  flex:1;border:none;border-radius:16px;background:var(--card);box-shadow:var(--shadow);
+  font-family:inherit;font-size:20px;font-weight:800;color:var(--sub);padding:8px 4px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.nav span{font-size:12px}
+.nav.on{color:var(--accent)}
+.nav.primary{background:var(--accent);color:#fff;box-shadow:0 6px 0 #5a3fd6}
+.nav.primary:active{transform:translateY(4px);box-shadow:0 2px 0 #5a3fd6}
+#roomies{position:absolute;inset:0;pointer-events:none}
+.roomie{position:absolute;bottom:9%;font-size:42px;transition:left 3.2s ease-in-out;pointer-events:auto;cursor:pointer}
+.roomie img{width:56px;height:56px;object-fit:contain}
+#houseBadge{position:absolute;top:8px;right:10px;font-size:12px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4);z-index:4}
 
 #room{
   position:relative;flex:1;min-height:0;border-radius:var(--radius);overflow:hidden;
@@ -213,39 +246,62 @@ select.txtinput{width:180px}
 <!-- HOME = 집 -->
 <div class="screen on" id="home">
   <div class="hometop">
+    <div id="greet">안녕! 👋</div>
+    <div style="flex:1"></div>
     <div id="homeStarsBox">⭐ <span id="homeStars">0</span></div>
-    <div id="houseName">작은 둥지</div>
     <button id="parentBtn">부모님</button>
   </div>
-  <div id="room">
-    <div id="roomWall"></div>
-    <div id="roomFloor"></div>
-    <div class="window" id="windowSky">☀️</div>
-    <div class="lamp">🕯️</div>
-    <div class="bed">🛏️</div>
-    <div id="decoLayer"></div>
-    <div id="roomNight"></div>
-    <div id="petStatus"></div>
-    <div id="petSprite">
-      <div class="bubble" id="petBubble"></div>
-      <span id="petArt">🥚</span><span id="petFx"></span>
+  <div id="homeMid">
+    <div id="room">
+      <div id="roomWall"></div>
+      <div id="roomFloor"></div>
+      <div class="window" id="windowSky">☀️</div>
+      <div class="lamp">🕯️</div>
+      <div class="bed">🛏️</div>
+      <div id="decoLayer"></div>
+      <div id="roomies"></div>
+      <div id="roomNight"></div>
+      <div id="petStatus"></div>
+      <div id="houseBadge"></div>
+      <div id="petSprite">
+        <div class="bubble" id="petBubble"></div>
+        <span id="petArt">🥚</span><span id="petFx"></span>
+      </div>
+    </div>
+    <div class="carebar">
+      <button class="chip" id="feedBtn">🍖 밥 ⭐2</button>
+      <button class="chip" id="sleepBtn" style="display:none">💤 재우기</button>
+      <button class="chip" id="cureBtn" style="display:none">💊 치료 ⭐3</button>
+      <span id="houseProg"></span>
+    </div>
+    <div class="dash">
+      <div class="dcard">
+        <div class="dtitle">오늘의 수학 <b id="todayCount">0</b>문제</div>
+        <div class="dbar"><span class="dnm">🔢 수·비교</span><div class="bar"><div id="barCount"></div></div><span class="dct" id="ctCount">0</span></div>
+        <div class="dbar"><span class="dnm">➕ 연산</span><div class="bar"><div id="barCalc"></div></div><span class="dct" id="ctCalc">0</span></div>
+        <div class="dbar"><span class="dnm">📖 문장제</span><div class="bar"><div id="barStory"></div></div><span class="dct" id="ctStory">0</span></div>
+      </div>
+      <div class="dcard dcenter">
+        <div class="dtitle">연속 학습</div>
+        <div class="dbig">🔥 <span id="streakDays">0</span>일</div>
+      </div>
     </div>
   </div>
-  <div id="houseProg"></div>
-  <div class="actionbar">
-    <button class="act primary" id="startBtn"><span class="ico">📚</span>공부 모험</button>
-    <button class="act" id="feedBtn"><span class="ico">🍖</span>밥 (⭐2)</button>
-    <button class="act" id="sleepBtn" style="display:none"><span class="ico">💤</span>재우기</button>
-    <button class="act" id="cureBtn" style="display:none"><span class="ico">💊</span>치료 (⭐3)</button>
-    <button class="act" id="shopBtn"><span class="ico">🛍️</span>상점</button>
-    <button class="act" id="eggBtn"><span class="ico">🥚</span>친구들</button>
-  </div>
+  <nav id="bottomNav">
+    <button class="nav on" data-nav="home">🏠<span>홈</span></button>
+    <button class="nav primary" id="startBtn">📚<span>공부 모험</span></button>
+    <button class="nav" id="shopBtn">🛍️<span>상점</span></button>
+    <button class="nav" id="eggBtn">🐣<span>친구들</span></button>
+  </nav>
 </div>
 
 <!-- 상점 모달 -->
 <div class="modal" id="shopModal">
   <div class="sheet">
-    <h3>🛍️ 꾸미기 상점 <span style="font-size:14px;color:var(--sub)">⭐<span id="shopStars">0</span></span><button class="x" data-close="shopModal">✕</button></h3>
+    <h3>🛍️ 상점 <span style="font-size:14px;color:var(--sub)">⭐<span id="shopStars">0</span></span><button class="x" data-close="shopModal">✕</button></h3>
+    <div class="seg" style="margin-bottom:12px" id="shopTabs">
+      <button data-t="deco" class="on">🪴 꾸미기</button><button data-t="egg">🥚 알</button>
+    </div>
     <div class="shopgrid" id="shopGrid"></div>
     <div class="smallnote" id="shopNote"></div>
   </div>
@@ -339,6 +395,9 @@ select.txtinput{width:180px}
     <div class="setrow"><span>한국어 목소리</span>
       <select id="voiceSel" class="txtinput"></select>
     </div>
+    <div class="setrow"><span id="voiceNow" style="font-size:13px;color:var(--sub)">적용 중: -</span>
+      <button class="chip" id="voiceTest">🔊 들어보기</button>
+    </div>
     <div class="smallnote">💡 목소리가 로봇 같다면: 아이패드 <b>설정 → 손쉬운 사용 → 콘텐츠 말하기 → 음성 → 한국어</b>에서 <b>유나(향상됨)</b> 또는 <b>수진(향상됨)</b>을 다운로드하고 여기서 선택하세요. 훨씬 자연스러워져요.</div>
     <div class="setrow" style="margin-top:12px"><span>아이 이름 (펫이 불러줘요)</span>
       <input type="text" id="childNameInput" class="txtinput" maxlength="6" placeholder="예: 지우">
@@ -354,7 +413,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "5";
+const APP_VERSION = "6";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -477,75 +536,75 @@ const HEART_MAX = 5, HEART_DECAY_H = 8, FEED_COST = 2, CURE_COST = 3;
 /* 아기·유아 말 (성장하며 어른 말을 배움) */
 const BABY = {
   greet: ["응애? 응애!", "까르르~!", "빠아… 빠!", "냠… 응애!"],
-  happy: ["꺄~! 까르르!", "방긋방긋!", "응애! 좋아!"],
-  hungry: ["응애애… 맘마…", "맘마! 맘마!", "으앙… 배고파…"],
+  happy: ["꺄~! 까르르!", "방긋방긋!", "응애! 꺄!"],
+  hungry: ["응애애… 맘마…", "맘마! 맘마!", "으앙… 응애…"],
   sleepy: ["으앙… 쿨쿨…", "하암… 응애…", "쌔근쌔근…"],
-  praise: ["꺄! 짝짝!", "까르르! 최고!", "방긋! 응애!"],
+  praise: ["꺄! 짝짝!", "까르르!", "방긋! 응애!"],
   sick: ["으앙… 콜록…", "응애… 아야…"],
   sleep: ["쌔근쌔근…", "쿨… 쿨…"],
 };
 const TODDLER = {
-  greet: ["{child} 안녕! 히히.", "놀자! 놀자!", "{child} 왔다~!"],
-  happy: ["좋아! 신나!", "{child} 좋아!", "히히, 재밌어!"],
-  hungry: ["배고파… 맘마 줘…", "{child}, 밥…!"],
-  sleepy: ["졸려어… 코 자자…", "하암… 이불…"],
-  praise: ["{child} 짱! 정답!", "우와! 맞았다!"],
-  sick: ["콜록콜록… 아파…", "{child}… 머리가 뜨거워…"],
+  greet: ["{child}, 안녕하세요! 히히.", "같이 놀아요! 놀아요!", "{child} 왔어요~!"],
+  happy: ["좋아요! 신나요!", "{child}, 좋아요!", "히히, 재밌어요!"],
+  hungry: ["배고파요… 맘마 주세요…", "{child}, 밥 주세요…!"],
+  sleepy: ["졸려요… 코 자요…", "하암… 이불 덮을래요…"],
+  praise: ["{child} 짱이에요! 정답!", "우와! 맞았어요!"],
+  sick: ["콜록콜록… 아파요…", "{child}… 머리가 뜨거워요…"],
   sleep: ["쿨쿨… 새근새근…"],
 };
 const PERSONA = {
   owl: {
-    greet: ["{child}, 안녕! 오늘도 만나서 기뻐.", "{child}, 수리는 네가 오길 기다렸어!", "부엉부엉~ {child}, 같이 놀자!"],
-    happy: ["{child} 덕분에 힘이 나!", "우와, 기분 최고야!", "네가 있어서 참 좋아."],
-    hungry: ["{child}, 배가 좀 고파졌어…", "밥 먹고 싶다… 별을 모아 줄래?"],
-    sleepy: ["하암… 졸려. {child}도 푹 자야 해.", "밤이네… 별처럼 반짝 자자."],
-    praise: ["{child}, 정답이야! 역시 대단해!", "우와, {child} 진짜 똑똑하다!"],
-    sick: ["콜록… 몸이 으슬으슬해…", "{child}, 나 감기 걸렸나 봐…"],
+    greet: ["{child}, 안녕하세요! 오늘도 만나서 기뻐요.", "{child}, 수리는 기다리고 있었어요!", "부엉부엉~ {child}, 같이 놀아요!"],
+    happy: ["{child} 덕분에 힘이 나요!", "우와, 기분 최고예요!", "{child}가 있어서 참 좋아요."],
+    hungry: ["{child}, 배가 좀 고파졌어요…", "밥 먹고 싶어요… 별을 모아 줄래요?"],
+    sleepy: ["하암… 졸려요. {child}도 푹 자야 해요.", "밤이네요… 별처럼 반짝 자요."],
+    praise: ["{child}, 정답이에요! 역시 대단해요!", "우와, {child} 정말 똑똑해요!"],
+    sick: ["콜록… 몸이 으슬으슬해요…", "{child}, 감기에 걸렸나 봐요…"],
     sleep: ["쿨쿨… 부엉…", "쌔근쌔근…"],
   },
   dino: {
-    greet: ["{child}! 오늘도 모험 가는 거지?!", "크앙~ {child}, 심심했단 말이야!", "디노 등에 타! 출발~!"],
-    happy: ["크앙! 신난다!", "{child}랑 있으면 제일 재밌어!", "한 판 더! 한 판 더!"],
-    hungry: ["크으… 배고파서 힘이 안 나…", "{child}, 밥! 밥이 필요해!"],
-    sleepy: ["쿨쿨… 공룡도 잘 시간…", "하암… 내일 더 크게 크앙 할게."],
-    praise: ["크앙! {child} 최고다!", "역시 내 친구! 정답이야!"],
-    sick: ["크으… 콜록… 힘이 안 나…", "{child}… 공룡도 아플 때가 있어…"],
+    greet: ["{child}! 오늘도 모험 가는 거죠?!", "크앙~ {child}, 심심했어요!", "디노 등에 타요! 출발~!"],
+    happy: ["크앙! 신나요!", "{child}랑 있으면 제일 재밌어요!", "한 판 더 해요! 한 판 더!"],
+    hungry: ["크으… 배고파서 힘이 안 나요…", "{child}, 밥이 필요해요!"],
+    sleepy: ["쿨쿨… 공룡도 잘 시간이에요…", "하암… 내일 더 크게 크앙 할게요."],
+    praise: ["크앙! {child} 최고예요!", "역시 내 친구! 정답이에요!"],
+    sick: ["크으… 콜록… 힘이 안 나요…", "{child}… 공룡도 아플 때가 있어요…"],
     sleep: ["쿠울… 크앙… 쿨…"],
   },
   cat: {
-    greet: ["야옹. …{child} 왔구나. 뭐, 반가워.", "{child}, 기다린 건 아니야. 진짜야.", "야옹~ 오늘은 뭐 하고 놀까?"],
-    happy: ["가르릉… 기분 좋아.", "{child} 옆이 제일 따뜻해.", "…좋아. 조금 많이."],
-    hungry: ["야옹… 배고파. 츄르… 아니 밥 줘.", "{child}, 나 밥 안 주면 삐질 거야."],
-    sleepy: ["냐암… 무릎에서 자고 싶다…", "졸려… 이불 덮어 줘…"],
-    praise: ["오, {child} 제법인데? 정답!", "…멋졌어. 진짜로."],
-    sick: ["냐아… 콜록… 몸이 무거워…", "{child}… 약 먹기 싫은데…"],
+    greet: ["야옹. …{child} 왔군요. 뭐, 반가워요.", "{child}, 기다린 건 아니에요. 진짜예요.", "야옹~ 오늘은 뭐 하고 놀까요?"],
+    happy: ["가르릉… 기분 좋아요.", "{child} 옆이 제일 따뜻해요.", "…좋아요. 조금 많이요."],
+    hungry: ["야옹… 배고파요. 츄르… 아니 밥 주세요.", "{child}, 밥 안 주면 삐질 거예요."],
+    sleepy: ["냐암… 무릎에서 자고 싶어요…", "졸려요… 이불 덮어 주세요…"],
+    praise: ["오, {child} 제법인데요? 정답!", "…멋졌어요. 진짜로요."],
+    sick: ["냐아… 콜록… 몸이 무거워요…", "{child}… 약은 먹기 싫은데요…"],
     sleep: ["가르릉… 쿨쿨…"],
   },
   penguin: {
-    greet: ["{child}, 안녕! 오늘도 뒤뚱뒤뚱 왔어.", "펭펭! 넘어져도 다시 일어나면 돼!", "{child}, 손 잡고 같이 가자."],
-    happy: ["펭펭~ 마음이 따뜻해!", "{child}가 웃으면 나도 웃음이 나!", "미끄럼 타고 싶은 기분이야!"],
-    hungry: ["배가 고프면 용기가 안 나…", "{child}, 물고기… 아니 밥 부탁해…"],
-    sleepy: ["뒤뚱… 졸려서 자꾸 넘어져…", "포근하게 자고 싶어…"],
-    praise: ["{child}, 해냈구나! 나도 기뻐!", "펭펭! 정답이야, 멋져!"],
-    sick: ["펭… 콜록… 으슬으슬해…", "{child}… 따뜻하게 해 줘…"],
+    greet: ["{child}, 안녕하세요! 뒤뚱뒤뚱 왔어요.", "펭펭! 넘어져도 다시 일어나면 돼요!", "{child}, 손 잡고 같이 가요."],
+    happy: ["펭펭~ 마음이 따뜻해요!", "{child}가 웃으면 저도 웃음이 나요!", "미끄럼 타고 싶은 기분이에요!"],
+    hungry: ["배가 고프면 용기가 안 나요…", "{child}, 물고기… 아니 밥 부탁해요…"],
+    sleepy: ["뒤뚱… 졸려서 자꾸 넘어져요…", "포근하게 자고 싶어요…"],
+    praise: ["{child}, 해냈군요! 저도 기뻐요!", "펭펭! 정답이에요, 멋져요!"],
+    sick: ["펭… 콜록… 으슬으슬해요…", "{child}… 따뜻하게 해 주세요…"],
     sleep: ["펭… 쿨쿨… 펭…"],
   },
   dragon: {
-    greet: ["흠! {child}, 위대한 드래곤님 등장이다!", "{child}, 오늘의 시련을 함께 넘자!", "불꽃처럼 뜨겁게 가 보자고!"],
-    happy: ["으하하! 이 기분, 전설급이야!", "{child}, 우리 콤비 최강이지!", "날개가 근질근질~ 날고 싶다!"],
-    hungry: ["드래곤도… 배는 고프다…", "{child}, 용사의 밥을 다오!"],
-    sleepy: ["전설의 용도 잘 시간… 쿨쿨.", "하암… 꿈에서 하늘을 날 거야."],
-    praise: ["오오! {child}, 전설적인 정답!", "드래곤이 인정한다! 대단해!"],
-    sick: ["큭… 전설의 용이 감기라니…", "{child}… 불꽃이 꺼질 것 같아…"],
+    greet: ["흠! {child}, 위대한 드래곤님 등장이에요!", "{child}, 오늘의 시련을 함께 넘어요!", "불꽃처럼 뜨겁게 가 봐요!"],
+    happy: ["으하하! 이 기분, 전설급이에요!", "{child}, 우리 콤비가 최강이죠!", "날개가 근질근질~ 날고 싶어요!"],
+    hungry: ["드래곤도… 배는 고파요…", "{child}, 용사의 밥을 주세요!"],
+    sleepy: ["전설의 용도 잘 시간이에요… 쿨쿨.", "하암… 꿈에서 하늘을 날 거예요."],
+    praise: ["오오! {child}, 전설적인 정답이에요!", "드래곤이 인정해요! 대단해요!"],
+    sick: ["큭… 전설의 용이 감기라니요…", "{child}… 불꽃이 꺼질 것 같아요…"],
     sleep: ["쿠오오… 쿨쿨…"],
   },
   unicorn: {
-    greet: ["{child}, 오늘 하늘 봤어? 참 예뻤어.", "반짝반짝~ {child} 만나러 무지개 타고 왔어.", "{child}, 오늘은 어떤 꿈을 꿀까?"],
-    happy: ["마음에 무지개가 떴어!", "{child}랑 있으면 반짝여!", "랄라라~ 노래하고 싶은 기분!"],
-    hungry: ["배가 고프면 반짝임이 줄어…", "{child}, 별사탕… 아니 밥 줄래?"],
-    sleepy: ["구름 이불 덮고 잘래…", "하암… 꿈나라에서 만나."],
-    praise: ["{child}, 별처럼 빛나는 정답!", "반짝! 정말 아름다운 답이야!"],
-    sick: ["콜록… 무지개빛이 흐려졌어…", "{child}… 뿔이 시큰거려…"],
+    greet: ["{child}, 오늘 하늘 봤어요? 참 예뻤어요.", "반짝반짝~ {child} 만나러 무지개 타고 왔어요.", "{child}, 오늘은 어떤 꿈을 꿀까요?"],
+    happy: ["마음에 무지개가 떴어요!", "{child}랑 있으면 반짝여요!", "랄라라~ 노래하고 싶은 기분이에요!"],
+    hungry: ["배가 고프면 반짝임이 줄어요…", "{child}, 별사탕… 아니 밥 줄래요?"],
+    sleepy: ["구름 이불 덮고 잘래요…", "하암… 꿈나라에서 만나요."],
+    praise: ["{child}, 별처럼 빛나는 정답이에요!", "반짝! 정말 아름다운 답이에요!"],
+    sick: ["콜록… 무지개빛이 흐려졌어요…", "{child}… 뿔이 시큰거려요…"],
     sleep: ["반짝… 쿨쿨… 반짝…"],
   },
 };
@@ -568,10 +627,12 @@ const FX = { happy: "✨", sad: "💧", angry: "💢", sick: "🤒", sleepy: "�
 
 /* ---------- 집 ---------- */
 const HOUSES = [
-  { name: "작은 둥지", need: 0, wall: "linear-gradient(#f2e3c8,#eeD9b8)", floor: "linear-gradient(#dcc39b,#cbab7e)", slots: 2 },
-  { name: "아늑한 오두막", need: 25, wall: "linear-gradient(#ffe9c7,#ffd9a1)", floor: "linear-gradient(#c98f52,#a96f3b)", slots: 4 },
-  { name: "포근한 벽돌집", need: 80, wall: "linear-gradient(#ffe2ec,#ffd0e0)", floor: "linear-gradient(#b98d5f,#9a744c)", slots: 6 },
+  { name: "작은 둥지", need: 0, wall: "linear-gradient(#f2e3c8,#eeD9b8)", floor: "linear-gradient(#dcc39b,#cbab7e)", slots: 2, petCap: 2 },
+  { name: "아늑한 오두막", need: 25, wall: "linear-gradient(#ffe9c7,#ffd9a1)", floor: "linear-gradient(#c98f52,#a96f3b)", slots: 4, petCap: 4 },
+  { name: "포근한 벽돌집", need: 80, wall: "linear-gradient(#ffe2ec,#ffd0e0)", floor: "linear-gradient(#b98d5f,#9a744c)", slots: 6, petCap: 6 },
 ];
+/* 알 상점: 마스터 무료 획득과 병행되는 구매 경로 (별 = 학습 재화) */
+const EGG_PRICE = { dino: 12, cat: 12, penguin: 12, dragon: 20, unicorn: 20 };
 const SHOP = [
   { id: "plant",  e: "🪴", n: "화분",     cost: 4, style: "left:4%;bottom:8%" },
   { id: "bear",   e: "🧸", n: "곰인형",   cost: 6, style: "left:22%;bottom:7%" },
@@ -716,13 +777,26 @@ function petTalk(trigger) {
 }
 
 /* ---------- 집 렌더 + 펫 산책 ---------- */
+/* 오늘 통계 */
+function todayLog() {
+  const d = new Date();
+  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  return S.log.filter(l => l.ts >= start);
+}
+function streakDays() {
+  const days = new Set(S.log.map(l => new Date(l.ts).toDateString()));
+  let n = 0; const d = new Date();
+  while (days.has(d.toDateString())) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
 function renderHome() {
   migratePet();
   checkEggUnlock(session ? session.events : []);
   loadArt(S.pet.active);
   const lv = houseLevel(), H = HOUSES[lv];
   $("#homeStars").textContent = S.stars;
-  $("#houseName").textContent = H.name;
+  $("#greet").textContent = S.settings.childName ? `안녕, ${voc(S.settings.childName)}! 👋` : "안녕! 👋";
+  $("#houseBadge").textContent = `🏠 ${H.name}`;
   $("#roomWall").style.background = H.wall;
   $("#roomFloor").style.background = H.floor;
   $("#room").classList.toggle("night", isNight());
@@ -730,8 +804,42 @@ function renderHome() {
   // 다음 집 진행도
   const next = HOUSES[lv + 1];
   $("#houseProg").textContent = next
-    ? `다음 집(${next.name})까지 ⭐ ${Math.max(0, next.need - S.starsEarned)}개 더 모으면 이사!`
+    ? `다음 집(${next.name})까지 ⭐${Math.max(0, next.need - S.starsEarned)}`
     : "제일 좋은 집이에요! 🎉";
+  // 오늘의 수학 대시보드
+  const tl = todayLog();
+  $("#todayCount").textContent = tl.length;
+  const grp = { count: 0, calc: 0, story: 0 };
+  tl.forEach(l => {
+    if (l.skill === "S1" || l.skill === "S4") grp.count++;
+    else if (l.skill === "S2" || l.skill === "S3") grp.calc++;
+    else if (l.skill === "S5") grp.story++;
+  });
+  const GOAL = 10;
+  $("#barCount").style.width = Math.min(100, grp.count / GOAL * 100) + "%";
+  $("#barCalc").style.width = Math.min(100, grp.calc / GOAL * 100) + "%";
+  $("#barStory").style.width = Math.min(100, grp.story / GOAL * 100) + "%";
+  $("#ctCount").textContent = grp.count;
+  $("#ctCalc").textContent = grp.calc;
+  $("#ctStory").textContent = grp.story;
+  $("#streakDays").textContent = streakDays();
+  // 룸메이트: 부화한 다른 친구들도 방에서 같이 산다 (집 크기만큼)
+  const cap = H.petCap;
+  const mates = Object.keys(S.pet.pets)
+    .filter(id => id !== S.pet.active && S.pet.pets[id].stage > 0)
+    .slice(0, Math.max(0, cap - 1));
+  const rz = $("#roomies");
+  rz.innerHTML = "";
+  mates.forEach((id, i) => {
+    loadArt(id);
+    const el = document.createElement("div");
+    el.className = "roomie";
+    el.style.left = (12 + i * 22) + "%";
+    el.dataset.sp = id;
+    el.innerHTML = petArtHTML(id, "idle");
+    el.onclick = () => roomieTalk(id, el);
+    rz.appendChild(el);
+  });
   // 데코
   const dl = $("#decoLayer");
   dl.innerHTML = "";
@@ -764,21 +872,43 @@ function renderHome() {
   // 기상 인사
   if (S.pet.wokeUp) {
     S.pet.wokeUp = false; save();
-    setTimeout(() => { showBubble("잘 잤다! 고마워, 푹 잤어!"); speakPet("잘 잤다! 푹 재워 줘서 고마워!"); petAnimate("happy"); }, 800);
+    setTimeout(() => { showBubble("잘 잤어요! 고마워요!"); speakPet("잘 잤어요! 푹 재워 줘서 고마워요!"); petAnimate("happy"); }, 800);
   }
+}
+/* 룸메이트 대화: 그 친구의 성격·성장단계로 말한다 */
+function roomieTalk(id, el) {
+  sfxTap();
+  const p = S.pet.pets[id];
+  const bank = p.stage >= 2 ? (PERSONA[id] || PERSONA.owl) : (p.xp < TALK_XP ? BABY : TODDLER);
+  const pool = bank.greet;
+  const nm = S.settings.childName;
+  const bare = nm ? nm + (hasJongName(nm) ? "이" : "") : "친구";
+  const line = pick(pool)
+    .replace(/\{child\}[야아]/g, voc(nm))
+    .replace(/\{child\}(?=[,!?.…~]|$)/g, voc(nm))
+    .replace(/\{child\}/g, bare);
+  const baby = p.stage < 2 && p.xp < TALK_XP;
+  speak(line, "ko", baby ? { pitch: 1.5, rate: 0.8 } : { pitch: p.stage < 2 ? 1.35 : 1.1 });
+  el.style.transform = "translateY(-10px)";
+  setTimeout(() => el.style.transform = "", 300);
 }
 function tickHome() { if ($("#home").classList.contains("on")) renderHome(); }
 setInterval(tickHome, 60000);
-/* 산책 */
+/* 산책 — 주인공 + 룸메이트 모두 */
 setInterval(() => {
   if (!$("#home").classList.contains("on") || document.hidden) return;
   const p = activePet();
-  if (p.stage === 0 || S.pet.asleep) return;
-  const el = $("#petSprite");
-  const cur = parseFloat(el.style.left || "40");
-  const x = 6 + rnd(62);
-  el.style.setProperty("--flip", x < cur ? -1 : 1);
-  el.style.left = x + "%";
+  if (p.stage > 0 && !S.pet.asleep) {
+    const el = $("#petSprite");
+    const cur = parseFloat(el.style.left || "40");
+    const x = 6 + rnd(62);
+    el.style.setProperty("--flip", x < cur ? -1 : 1);
+    el.style.left = x + "%";
+  }
+  document.querySelectorAll(".roomie").forEach(el => {
+    if (Math.random() < 0.4) return; // 다 같이 움직이면 산만하니 일부만
+    el.style.left = (6 + rnd(70)) + "%";
+  });
 }, 3400);
 
 $("#petSprite").onclick = () => petTalk("tap");
@@ -795,16 +925,16 @@ $("#cureBtn").onclick = () => {
   S.stars -= CURE_COST; S.pet.sick = false; S.pet.hearts = Math.max(S.pet.hearts, 3); S.pet.hz = null; save();
   sfxGood();
   renderHome();
-  showBubble("다 나았어! 고마워!");
-  speakPet("약 먹었더니 다 나았어! 정말 고마워!");
+  showBubble("다 나았어요! 고마워요!");
+  speakPet("약 먹었더니 다 나았어요! 정말 고마워요!");
   petAnimate("happy");
 };
 $("#sleepBtn").onclick = () => {
   const p = activePet();
   if (p.stage === 0) return;
   S.pet.asleep = !S.pet.asleep;
-  if (S.pet.asleep) { S.pet.ts = Date.now(); showBubble(petLine("sleep")); speakPet("잘 자… 내일 만나…"); }
-  else { showBubble("음냐… 벌써 아침이야?"); }
+  if (S.pet.asleep) { S.pet.ts = Date.now(); showBubble(petLine("sleep")); speakPet("잘 자요… 내일 만나요…"); }
+  else { showBubble("음냐… 벌써 아침이에요?"); }
   save();
   renderHome();
 };
@@ -812,11 +942,40 @@ $("#sleepBtn").onclick = () => {
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => $("#" + b.dataset.close).classList.remove("on"));
 $("#shopBtn").onclick = () => { renderShop(); $("#shopModal").classList.add("on"); };
 $("#eggBtn").onclick = () => { renderEggs(); $("#eggModal").classList.add("on"); };
+let shopTab = "deco";
+$("#shopTabs").onclick = e => {
+  if (!e.target.dataset.t) return;
+  shopTab = e.target.dataset.t;
+  document.querySelectorAll("#shopTabs button").forEach(b => b.classList.toggle("on", b.dataset.t === shopTab));
+  renderShop();
+};
 function renderShop() {
   $("#shopStars").textContent = S.stars;
-  const lv = houseLevel(), slots = HOUSES[lv].slots;
   const g = $("#shopGrid");
   g.innerHTML = "";
+  if (shopTab === "egg") {
+    for (const [id, sp] of Object.entries(SPECIES)) {
+      if (!sp.unlock) continue;
+      const owned = !!S.pet.pets[id];
+      const cost = EGG_PRICE[id];
+      const el = document.createElement("div");
+      el.className = "shopitem" + (owned ? " owned" : S.stars < cost ? " cant" : "");
+      el.innerHTML = `<div class="ico">${owned ? sp.stages[S.pet.pets[id].stage] : "🥚"}</div><div class="nm">${sp.name}</div>` +
+        `<div class="pr">${owned ? "함께 살아요 ✓" : `⭐${cost}`}</div>` +
+        (owned ? "" : `<div class="pr" style="font-size:10px">무료: ${SKILLS[sp.unlock].name} 마스터</div>`);
+      if (!owned) el.onclick = () => {
+        if (S.stars < cost) { $("#shopNote").textContent = "⭐ 별이 부족해요. 공부 모험에서 별을 모아 와요!"; return; }
+        S.stars -= cost; S.pet.pets[id] = { stage: 0, xp: 0 }; save();
+        sfxGood(); renderShop(); renderHome();
+        $("#shopNote").textContent = `🥚✨ ${sp.name}의 알을 데려왔어요! 정답을 맞히면 부화해요.`;
+        speak(`${sp.name}의 알을 데려왔어요! 문제를 맞히면 부화해요.`);
+      };
+      g.appendChild(el);
+    }
+    if (!$("#shopNote").textContent.includes("데려왔")) $("#shopNote").textContent = "알은 별로 데려오거나, 수학 영역을 마스터하면 무료로 찾아와요!";
+    return;
+  }
+  const lv = houseLevel(), slots = HOUSES[lv].slots;
   for (const it of SHOP) {
     const owned = S.house.owned.includes(it.id);
     const full = S.house.owned.length >= slots;
@@ -869,12 +1028,13 @@ function makeChoices(answer, wrongs) {
 function genCounting(max, lang) {
   const n = 2 + rnd(Math.min(max, 9) - 1);
   const o = pick(OBJECTS);
-  const ko = `${o.n}가 몇 개일까요?`;
+  const iga = hasJong(o.n) ? "이" : "가";
+  const ko = `${o.n}${iga} 몇 개일까요?`;
   const en = `How many ${o.enPl} are there?`;
   return {
     skill: "S1", op: "count", lang,
     text: lang === "en" ? en : ko,
-    speakText: lang === "en" ? `${en} Let's count!` : `${o.n}가 몇 개인지 세어 볼까요?`,
+    speakText: lang === "en" ? `${en} Let's count!` : `${o.n}${iga} 몇 개인지 세어 볼까요?`,
     objs: [{ e: o.e, n }], answer: n,
     choices: makeChoices(n, shuffle([{ v: n - 1, tag: "offByOne" }, { v: n + 1, tag: "offByOne" }, { v: n + 2, tag: "other" }])),
   };
@@ -909,7 +1069,7 @@ function genCompare(max, lang) {
   return {
     skill: "S4", op: "compare", a, b, lang,
     text: lang === "en" ? "Which side has more? Tap it!" : "어느 쪽이 더 많을까요? 많은 쪽을 눌러요!",
-    speakText: lang === "en" ? "Which side has more? Tap the side with more!" : `${o1.n}와 ${o2.n}, 어느 쪽이 더 많은지 눌러 볼까요?`,
+    speakText: lang === "en" ? "Which side has more? Tap the side with more!" : `${o1.n}${hasJong(o1.n) ? "과" : "와"} ${o2.n}, 어느 쪽이 더 많은지 눌러 볼까요?`,
     groups: [{ e: o1.e, n: a }, { e: o2.e, n: b }], answer: a > b ? 0 : 1,
   };
 }
@@ -1528,6 +1688,9 @@ function renderParent() {
     o.textContent = "음성 없음";
     sel.appendChild(o);
   }
+  $("#voiceNow").textContent = koVoice
+    ? `적용 중: ${koVoice.name} (${vQualityLabel[vQuality(koVoice)]})`
+    : "적용 중: 한국어 음성 없음";
 }
 function syncSeg(sel, val) {
   document.querySelectorAll(sel + " button").forEach(b => b.classList.toggle("on", String(b.dataset.v) === String(val)));
@@ -1548,8 +1711,10 @@ $("#childNameInput").addEventListener("input", e => { S.settings.childName = e.t
 $("#voiceSel").addEventListener("change", e => {
   S.settings.voiceKo = e.target.value; save();
   loadVoices();
+  renderParent();
   speak("안녕하세요! 이 목소리로 읽어 드릴게요.");
 });
+$("#voiceTest").onclick = () => speak("안녕하세요! 사과가 세 개, 딸기가 두 개 있어요. 모두 몇 개일까요?");
 $("#resetBtn").onclick = () => {
   if (confirm("모든 학습 기록과 별, 펫, 집을 삭제할까요?")) {
     S = defaultState(); migratePet(); save();

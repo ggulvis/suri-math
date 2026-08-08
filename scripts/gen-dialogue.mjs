@@ -36,7 +36,7 @@ function prompt(spKey) {
 캐릭터: ${CHARS[spKey]}
 
 대사 규칙:
-- 반말, 한 문장 또는 짧은 두 문장 (8~40자).
+- **존댓말(해요체)**, 한 문장 또는 짧은 두 문장 (8~40자). 모든 문장이 '~요/~죠/~까요/~세요'로 끝나야 한다. 반말 절대 금지. (예: "{child}, 안녕하세요! 기다렸어요.")
 - 아이 이름 자리에 반드시는 아니지만 자주 {child} 를 넣어 (예: "{child}, 안녕!"). 전체의 절반 이상은 {child} 포함.
 - 무섭거나 슬프거나 죄책감 주는 표현 금지. 항상 다정하고 유쾌하게.
 - 캐릭터 말버릇을 살려.
@@ -63,7 +63,9 @@ function extractJson(text) {
 function validLine(l) {
   if (typeof l !== "string") return false;
   const t = l.trim();
-  return t.length >= 6 && t.length <= 50 && !BANNED.test(t) && /[가-힣]/.test(t) && !/\d/.test(t);
+  if (t.length < 6 || t.length > 50 || BANNED.test(t) || !/[가-힣]/.test(t) || /\d/.test(t)) return false;
+  const sents = t.replace(/\{child\}/g, "X").split(/[.!?…~]+/).map(x => x.trim()).filter(Boolean);
+  return sents.every(x => /(요|죠)$/.test(x) || /^(쿨쿨|쌔근쌔근|콜록콜록|야옹|펭펭|크앙|부엉부엉|랄라라|반짝|히히|하암)$/.test(x));
 }
 
 const main = async () => {

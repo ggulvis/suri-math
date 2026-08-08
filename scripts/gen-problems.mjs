@@ -22,6 +22,7 @@ const PROMPT = `너는 만 5~6세(한국 나이 7세) 아이를 위한 수학 �
 
 공통 규칙:
 - 아이가 "듣고" 이해할 짧고 쉬운 문장 (한 템플릿 = 2~3문장). 숫자를 직접 쓰지 말 것.
+- **모든 문장은 존댓말(해요체)** — 각 문장이 반드시 '~요/~죠/~까요/~세요'로 끝나야 한다. 반말('놓았어', '넣었지') 절대 금지.
 - op는 "add"(늘어나는 상황) 또는 "sub"(줄어드는 상황).
 - 상황은 일상적·긍정적으로: 간식, 동물, 놀이터, 장난감. 무섭거나 슬픈 상황 금지.
 - 마지막 문장은 반드시 질문.
@@ -64,6 +65,8 @@ function validate(tpl) {
   if (/\d/.test(ko)) errs.push("ko hard-coded digit");
   if (ko.length < 15 || ko.length > 90) errs.push(`ko bad length ${ko.length}`);
   if (!/까요\s*\?|까\s*\?/.test(ko)) errs.push("ko no question");
+  { const sents = ko.replace(/\{[a-z]+\}/g, "X").split(/[.!?…]+/).map(x => x.trim()).filter(Boolean);
+    if (!sents.every(x => /(요|죠)$/.test(x))) errs.push("ko not haeyo-che"); }
   if (BANNED_KO.test(ko)) errs.push("ko banned word");
   if (!/[가-힣]/.test(ko)) errs.push("ko not korean");
   // en
