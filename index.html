@@ -99,12 +99,13 @@ body{
 @keyframes fxFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-24px)}}
 #petFx.go{animation:fxFloat 1.6s ease forwards}
 .bubble{
-  position:absolute;bottom:105%;left:50%;transform:translateX(-50%);
-  background:#fff;border-radius:14px;padding:8px 12px;font-size:14px;font-weight:700;
-  box-shadow:0 3px 8px rgba(0,0,0,.15);white-space:normal;width:max-content;max-width:200px;
-  opacity:0;transition:opacity .3s;pointer-events:none;z-index:5;color:var(--ink);
+  position:absolute;bottom:108%;left:50%;transform:translateX(-50%);
+  background:#fff;border-radius:16px;padding:10px 14px;font-size:16px;font-weight:800;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);white-space:normal;width:max-content;max-width:240px;
+  opacity:0;pointer-events:none;z-index:6;color:var(--ink);line-height:1.4;
 }
-.bubble.show{opacity:1}
+.bubble.show{opacity:1;animation:bubblePop .35s ease}
+@keyframes bubblePop{0%{transform:translateX(-50%) scale(.6)}70%{transform:translateX(-50%) scale(1.08)}100%{transform:translateX(-50%) scale(1)}}
 .bubble:after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff}
 .anim-happy{animation:happyJump .6s ease 2}
 @keyframes happyJump{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}}
@@ -413,7 +414,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "7";
+const APP_VERSION = "8";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -728,9 +729,11 @@ function petArtHTML(id, state) {
   return SPECIES[id].stages[p.stage];
 }
 let bubbleTimer = null;
-function showBubble(text, holdMs = 2600) {
+function showBubble(text, holdMs = 3500) {
   const b = $("#petBubble");
   b.textContent = text;
+  b.classList.remove("show");
+  void b.offsetWidth; // pop 애니메이션 재시작
   b.classList.add("show");
   clearTimeout(bubbleTimer);
   bubbleTimer = setTimeout(() => b.classList.remove("show"), holdMs);
@@ -836,7 +839,7 @@ function renderHome() {
     el.className = "roomie";
     el.style.left = (12 + i * 22) + "%";
     el.dataset.sp = id;
-    el.innerHTML = petArtHTML(id, "idle");
+    el.innerHTML = `<div class="bubble"></div><span class="rart">${petArtHTML(id, "idle")}</span>`;
     el.onclick = () => roomieTalk(id, el);
     rz.appendChild(el);
   });
@@ -889,8 +892,15 @@ function roomieTalk(id, el) {
     .replace(/\{child\}/g, bare);
   const baby = p.stage < 2 && p.xp < TALK_XP;
   speak(line, "ko", baby ? { pitch: 1.5, rate: 0.8 } : { pitch: p.stage < 2 ? 1.35 : 1.1 });
-  el.style.transform = "translateY(-10px)";
-  setTimeout(() => el.style.transform = "", 300);
+  const b = el.querySelector(".bubble");
+  if (b) {
+    b.textContent = line;
+    b.classList.remove("show"); void b.offsetWidth; b.classList.add("show");
+    clearTimeout(el._bt);
+    el._bt = setTimeout(() => b.classList.remove("show"), 3500);
+  }
+  const art = el.querySelector(".rart");
+  if (art) { art.style.display = "inline-block"; art.style.transform = "translateY(-10px)"; setTimeout(() => art.style.transform = "", 300); }
 }
 function tickHome() { if ($("#home").classList.contains("on")) renderHome(); }
 setInterval(tickHome, 60000);

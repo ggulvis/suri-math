@@ -1,5 +1,5 @@
 /* 수리수리 오프라인 캐시 — 배포마다 VERSION 올리면 자동 갱신 */
-const VERSION = "v7";
+const VERSION = "v8";
 const CACHE = "suri-" + VERSION;
 const ASSETS = ["./", "index.html", "manifest.json", "problems.json", "dialogue.json", "icon-180.png", "icon-512.png",
   "assets/owl_egg.png", "assets/owl_idle.png", "assets/owl_happy.png", "assets/owl_sad.png",
