@@ -193,6 +193,36 @@ body{
 .shopitem .pr{font-size:12px;color:var(--sub);font-weight:700}
 .shopitem.owned{border-color:var(--good);background:#f0fbf3}
 .shopitem.cant{opacity:.5}
+/* ---------- 보스 ---------- */
+#bossBar{
+  display:flex;align-items:center;gap:10px;background:var(--card);
+  border-radius:16px;box-shadow:var(--shadow);padding:8px 12px;
+}
+#bossFace{font-size:34px;transition:transform .2s}
+#bossFace.hit{transform:scale(.82) rotate(-8deg);filter:brightness(1.6)}
+#bossBar .bmid{flex:1;min-width:0}
+#bossBar .bname{font-size:13px;font-weight:800}
+#bossBar .bhpwrap{height:12px;background:#ffe0e5;border-radius:99px;overflow:hidden;margin-top:4px}
+#bossBar .bhpwrap>div{height:100%;background:linear-gradient(90deg,#ff6b81,#ff9aa8);border-radius:99px;transition:width .4s}
+#bossHearts{font-size:15px;letter-spacing:1px;white-space:nowrap}
+.brow{
+  display:flex;align-items:center;gap:12px;background:#faf7ff;border:2px solid #e2daff;
+  border-radius:16px;padding:12px;margin-bottom:10px;
+}
+.brow.cleared{border-color:var(--good);background:#f1fbf4}
+.brow.locked{opacity:.55;background:#f4f2f8}
+.brow .bico{font-size:40px}
+.brow .binfo{flex:1;min-width:0}
+.brow .bt{font-size:15px;font-weight:800}
+.brow .bd{font-size:11px;color:var(--sub);font-weight:700;margin-top:3px;line-height:1.5}
+.brow .bgo{
+  border:none;border-radius:12px;font-family:inherit;font-size:13px;font-weight:800;
+  padding:10px 14px;cursor:pointer;background:var(--bad);color:#fff;box-shadow:0 4px 0 #d64a5f;white-space:nowrap;
+}
+.brow .bgo:active{transform:translateY(3px);box-shadow:0 1px 0 #d64a5f}
+.brow .bgo.done{background:#eaf7ee;color:var(--good);box-shadow:none}
+.brow .bgo.lock{background:#e6e2ef;color:#9a92ad;box-shadow:none}
+
 /* ---------- 패션 착용 렌더 ---------- */
 .w-aura{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-45%);
@@ -426,6 +456,7 @@ select.txtinput{width:180px}
       <button class="chip" id="sleepBtn" style="display:none">💤 재우기</button>
       <button class="chip" id="cureBtn" style="display:none">💊 치료 ⭐3</button>
       <button class="chip" id="questBtn">🎯 퀘스트<span id="questBadge" class="badge" style="display:none">0</span></button>
+      <button class="chip" id="bossBtn">⚔️ 보스<span id="bossBadge" class="badge" style="display:none">!</span></button>
       <span id="houseProg"></span>
     </div>
     <div class="dash">
@@ -466,6 +497,15 @@ select.txtinput{width:180px}
   </div>
 </div>
 
+<!-- 보스 모달 -->
+<div class="modal" id="bossModal">
+  <div class="sheet">
+    <h3>⚔️ 보스 도전 <button class="x" data-close="bossModal">✕</button></h3>
+    <div id="bossList"></div>
+    <div class="smallnote">마스터한 영역에서만 문제가 나와요. 져도 괜찮아요 — 언제든 다시 도전할 수 있어요!</div>
+  </div>
+</div>
+
 <!-- 퀘스트 모달 -->
 <div class="modal" id="questModal">
   <div class="sheet">
@@ -491,6 +531,14 @@ select.txtinput{width:180px}
     <div class="progress"><div id="pbar"></div></div>
     <span id="gamePet">🦉</span>
     <div class="starcount">⭐<span id="gStars">0</span></div>
+  </div>
+  <div id="bossBar" style="display:none">
+    <span id="bossFace">👹</span>
+    <div class="bmid">
+      <div class="bname"></div>
+      <div class="bhpwrap"><div id="bhp"></div></div>
+    </div>
+    <div id="bossHearts"></div>
   </div>
   <div class="qcard">
     <button id="speakBtn">🔊</button>
@@ -581,7 +629,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "14";
+const APP_VERSION = "15";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -596,7 +644,7 @@ const defaultState = () => ({
   stars: 0, starsEarned: 0,
   settings: { max: 10, len: 10, tts: 1, lang: "ko", input: "tap", childName: "", voiceKo: "" },
   skills: {}, miscon: {}, remediation: [], log: [],
-  pet: null, house: null, quests: null,
+  pet: null, house: null, quests: null, bosses: null,
 });
 let S;
 try { S = Object.assign(defaultState(), JSON.parse(localStorage.getItem(KEY) || "{}")); }
@@ -878,7 +926,17 @@ function wearOf(petId) {
   if (!p.wear) p.wear = { balloon: null, hat: null, aura: null };
   return p.wear;
 }
+/* 보스: 마스터한 영역에서만 출제되는 종합 도전.
+   실패해도 벌점 없음(다시 도전) — 7세에게 벌은 필요 없다. */
+const BOSSES = [
+  { id: "goblin", name: "계산 도깨비", e: "👹", need: 1, hp: 8,  reward: 15, deco: "trophy" },
+  { id: "wizard", name: "숫자 마법사", e: "🧙", need: 3, hp: 10, reward: 25, deco: "medal" },
+  { id: "dragon", name: "수학 드래곤", e: "🐲", need: 5, hp: 12, reward: 40, deco: "castle" },
+];
 const SHOP = [
+  { id: "trophy", e: "🏆", n: "우승 트로피", cost: 0, boss: "goblin", style: "left:16%;bottom:9%" },
+  { id: "medal",  e: "🥇", n: "황금 메달",   cost: 0, boss: "wizard", style: "left:46%;top:16%", wall: 1 },
+  { id: "castle", e: "🏰", n: "미니 성",     cost: 0, boss: "dragon", style: "left:64%;bottom:7%" },
   { id: "plant",  e: "🪴", n: "화분",     cost: 4, style: "left:4%;bottom:8%" },
   { id: "bear",   e: "🧸", n: "곰인형",   cost: 6, style: "left:22%;bottom:7%" },
   { id: "frame",  e: "🖼️", n: "그림액자", cost: 5, style: "left:40%;top:12%", wall: 1 },
@@ -1089,6 +1147,11 @@ function renderHome() {
   const badge = $("#questBadge");
   badge.textContent = cc;
   badge.style.display = cc ? "inline-flex" : "none";
+  // 보스: 도전 가능한데 아직 안 깬 게 있으면 표시
+  migrateBosses();
+  const bossReady = BOSSES.some(b => bossUnlocked(b) && !bossCleared(b));
+  $("#bossBadge").style.display = bossReady ? "inline-flex" : "none";
+  $("#bossBtn").disabled = !BOSSES.some(bossUnlocked);
   // 룸메이트: 부화한 다른 친구들도 방에서 같이 산다 (집 크기만큼)
   const cap = H.petCap;
   const mates = Object.keys(S.pet.pets)
@@ -1228,6 +1291,8 @@ $("#sleepBtn").onclick = () => {
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => $("#" + b.dataset.close).classList.remove("on"));
 $("#shopBtn").onclick = () => { renderShop(); $("#shopModal").classList.add("on"); };
 $("#eggBtn").onclick = () => { renderEggs(); $("#eggModal").classList.add("on"); };
+/* 한정판(보스 보상)은 방 자리 제한에서 제외 */
+const paidDecoCount = () => S.house.owned.filter(id => { const it = SHOP.find(s2 => s2.id === id); return it && !it.boss; }).length;
 let shopTab = "deco";
 $("#shopTabs").onclick = e => {
   if (!e.target.dataset.t) return;
@@ -1352,12 +1417,23 @@ function renderShop() {
   const lv = houseLevel(), slots = HOUSES[lv].slots;
   for (const it of SHOP) {
     const owned = S.house.owned.includes(it.id);
-    const full = S.house.owned.length >= slots;
+    // 보스 보상 아이템은 판매하지 않음 — 이기면 얻는다
+    if (it.boss && !owned) {
+      const b = BOSSES.find(x => x.id === it.boss);
+      const el2 = document.createElement("div");
+      el2.className = "shopitem cant";
+      el2.innerHTML = `<div class="ico">${it.e}</div><div class="nm">${it.n}</div>` +
+        `<div class="pr" style="font-size:10px">⚔️ ${b.name}<br>물리치면 획득</div>`;
+      g.appendChild(el2);
+      continue;
+    }
+    const full = paidDecoCount() >= slots;
     const el = document.createElement("div");
     el.className = "shopitem" + (owned ? " owned" : (S.stars < it.cost || full) ? " cant" : "");
-    el.innerHTML = `<div class="ico">${it.e}</div><div class="nm">${it.n}</div><div class="pr">${owned ? "보유중 ✓" : "⭐" + it.cost}</div>`;
+    el.innerHTML = `<div class="ico">${it.e}</div><div class="nm">${it.n}</div>` +
+      `<div class="pr">${owned ? (it.boss ? "한정판 ✓" : "보유중 ✓") : "⭐" + it.cost}</div>`;
     if (!owned) el.onclick = () => {
-      if (S.house.owned.length >= slots) { $("#shopNote").textContent = "🏠 자리가 꽉 찼어요! 별을 모아 더 큰 집으로 이사하면 더 놓을 수 있어요."; return; }
+      if (paidDecoCount() >= slots) { $("#shopNote").textContent = "🏠 자리가 꽉 찼어요! 별을 모아 더 큰 집으로 이사하면 더 놓을 수 있어요."; return; }
       if (S.stars < it.cost) { $("#shopNote").textContent = "⭐ 별이 부족해요. 공부 모험에서 별을 모아 와요!"; return; }
       S.stars -= it.cost; S.house.owned.push(it.id); save();
       sfxGood(); renderShop(); renderHome();
@@ -1365,7 +1441,7 @@ function renderShop() {
     };
     g.appendChild(el);
   }
-  $("#shopNote").textContent = `방 자리: ${S.house.owned.length}/${slots} (집이 커지면 늘어나요)`;
+  $("#shopNote").textContent = `방 자리: ${paidDecoCount()}/${slots} (집이 커지면 늘어나요) · 한정판은 자리를 차지하지 않아요`;
 }
 /* ---------- 퀘스트 (전부 결정론 평가 — 기록에서 계산) ----------
    daily: 날짜별로 새로 생김 / once: 한 번만 받는 업적 */
@@ -1633,7 +1709,15 @@ function qLang() {
   if (m === "mix") return session.i % 2 === 0 ? "ko" : "en";
   return m;
 }
-function genNext() { return GEN[pickSkill()](S.settings.max, qLang()); }
+function genNext() {
+  // 보스전: 마스터한 영역에서만, 조금 더 큰 수로 (종합 시험 성격)
+  if (session && session.boss) {
+    const pool = ORDER.filter(mastered);
+    const k = pool.length ? pick(pool) : "S1";
+    return GEN[k](Math.min(20, S.settings.max + 5), qLang());
+  }
+  return GEN[pickSkill()](S.settings.max, qLang());
+}
 
 /* ---------- 오답 분류 ---------- */
 function classifyWrong(q, v) {
@@ -1893,15 +1977,61 @@ $("#cNo").onclick = () => { $("#confirmBox").style.display = "none"; pendingInk 
 
 /* ---------- 게임 진행 ---------- */
 let session = null;
-function startSession() {
-  session = { i: 0, total: S.settings.len, stars: 0, q: null, tries: 0, lock: false, wrongTag: null, events: [] };
+const BOSS_HEARTS = 3;
+function bossUnlocked(b) { return ORDER.filter(mastered).length >= b.need; }
+function bossCleared(b) { return !!(S.bosses && S.bosses.cleared[b.id]); }
+function migrateBosses() { if (!S.bosses) S.bosses = { cleared: {} }; }
+function renderBossList() {
+  migrateBosses();
+  const list = $("#bossList");
+  list.innerHTML = "";
+  const mc = ORDER.filter(mastered).length;
+  for (const b of BOSSES) {
+    const open = bossUnlocked(b), done = bossCleared(b);
+    const deco = SHOP.find(s => s.id === b.deco);
+    const row = document.createElement("div");
+    row.className = "brow" + (done ? " cleared" : open ? "" : " locked");
+    row.innerHTML =
+      `<span class="bico">${b.e}</span>` +
+      `<div class="binfo"><div class="bt">${b.name}</div>` +
+      `<div class="bd">${open ? `문제 ${b.hp}개 · 하트 ${BOSS_HEARTS}개<br>보상 ⭐${b.reward} + ${deco.e} ${deco.n}`
+                              : `🔒 수학 영역 ${b.need}개 마스터하면 열려요 (지금 ${mc}개)`}</div></div>`;
+    const btn = document.createElement("button");
+    btn.className = "bgo" + (done ? " done" : open ? "" : " lock");
+    btn.textContent = done ? "클리어 ✓" : open ? "도전!" : "잠김";
+    if (open) btn.onclick = () => { $("#bossModal").classList.remove("on"); startSession(b); };
+    row.appendChild(btn);
+    list.appendChild(row);
+  }
+}
+$("#bossBtn").onclick = () => { renderBossList(); $("#bossModal").classList.add("on"); };
+
+function renderBossBar() {
+  const b = session.boss;
+  $("#bossBar").style.display = b ? "flex" : "none";
+  if (!b) return;
+  $("#bossFace").textContent = b.def.e;
+  $("#bossBar .bname").textContent = b.def.name;
+  $("#bhp").style.width = (b.hp / b.def.hp * 100) + "%";
+  $("#bossHearts").textContent = "❤️".repeat(b.hearts) + "🤍".repeat(BOSS_HEARTS - b.hearts);
+}
+function startSession(bossDef) {
+  const boss = bossDef ? { def: bossDef, hp: bossDef.hp, hearts: BOSS_HEARTS } : null;
+  session = {
+    i: 0, total: boss ? bossDef.hp : S.settings.len, stars: 0, q: null,
+    tries: 0, lock: false, wrongTag: null, events: [], boss,
+  };
   $("#gamePet").textContent = activePet().stage > 0 ? SPECIES[S.pet.active].stages[activePet().stage] : "🥚";
   showScreen("game");
+  renderBossBar();
+  if (boss) speak(`${bossDef.name}가 나타났어요! 문제를 맞혀서 물리쳐요!`);
   nextQuestion();
 }
 function useWrite(q) { return S.settings.input === "write" && q.op !== "compare"; }
 function nextQuestion() {
-  if (session.i >= session.total) return endSession();
+  if (session.boss) {
+    if (session.boss.hp <= 0 || session.boss.hearts <= 0) return endSession();
+  } else if (session.i >= session.total) return endSession();
   session.q = genNext();
   session.tries = 0; session.lock = false; session.wrongTag = null;
   renderQuestion(session.q);
@@ -2024,6 +2154,15 @@ function handleCorrect() {
   if (firstTry) { session.stars++; S.stars++; S.starsEarned++; }
   save();
   $("#gStars").textContent = session.stars;
+  // 보스에게 한 방
+  if (session.boss) {
+    session.boss.hp = Math.max(0, session.boss.hp - 1);
+    const f = $("#bossFace");
+    f.classList.add("hit");
+    setTimeout(() => f.classList.remove("hit"), 260);
+    tone(300, .12, "square", 0, 0.12);
+    renderBossBar();
+  }
   session.i++;
   setTimeout(nextQuestion, 1400);
 }
@@ -2055,6 +2194,11 @@ function revealAnswer(q) {
   document.querySelectorAll(".choice").forEach(b => {
     if (Number(b.textContent) === q.answer) b.classList.add("correct");
   });
+  // 보스전: 틀리면 하트 하나
+  if (session.boss) {
+    session.boss.hearts = Math.max(0, session.boss.hearts - 1);
+    renderBossBar();
+  }
   session.i++;
   setTimeout(nextQuestion, 2200);
 }
@@ -2062,6 +2206,40 @@ function endSession() {
   const ev = $("#doneEvents");
   ev.innerHTML = "";
   const said = [];
+  // ── 보스전 결과 ──
+  if (session.boss) {
+    const b = session.boss, won = b.hp <= 0;
+    migrateBosses();
+    const first = won && !bossCleared(b.def);
+    if (first) {
+      S.bosses.cleared[b.def.id] = true;
+      S.stars += b.def.reward; S.starsEarned += b.def.reward;
+      if (!S.house.owned.includes(b.def.deco)) S.house.owned.push(b.def.deco);
+      save();
+    }
+    const deco = SHOP.find(s => s.id === b.def.deco);
+    const doneSess = session;
+    session = null;
+    showScreen("done");
+    $("#bossBar").style.display = "none";
+    $("#doneFace").textContent = won ? `${b.def.e}💥` : `${b.def.e}…`;
+    $("#doneStars").textContent = won ? "🏆" : "💪";
+    if (won) {
+      ev.innerHTML =
+        `<div class="eventcard"><span class="big">${b.def.e}</span> ${b.def.name}를 물리쳤어요!</div>` +
+        (first ? `<div class="eventcard"><span class="big">⭐</span> 별 ${b.def.reward}개를 받았어요!</div>` +
+                 `<div class="eventcard"><span class="big">${deco.e}</span> 한정판 «${deco.n}»을 얻었어요!</div>`
+               : `<div class="eventcard"><span class="big">✨</span> 또 이겼어요! (보상은 처음 한 번만)</div>`);
+      $("#doneMsg").textContent = "정말 강해졌어요!";
+      speak(`${b.def.name}를 물리쳤어요! ` + (first ? `별 ${b.def.reward}개와 한정판 ${deco.n}을 받았어요!` : "또 이겼어요!"));
+      confettiRain();
+    } else {
+      ev.innerHTML = `<div class="eventcard"><span class="big">💪</span> ${doneSess.i}문제나 풀었어요!</div>`;
+      $("#doneMsg").textContent = "괜찮아요! 연습하고 다시 도전해요.";
+      speak("아쉬워요! 조금 더 연습하고 다시 도전해요. 하나도 아깝지 않아요!");
+    }
+    return;
+  }
   for (const e of session.events) {
     const sp = SPECIES[e.id];
     const card = document.createElement("div");
