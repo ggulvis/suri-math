@@ -24,20 +24,51 @@ body{
 }
 .screen{position:absolute;inset:0;display:none;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
 .screen.on{display:flex}
-
-/* ---------- HOME ---------- */
-#home{align-items:center;justify-content:center;gap:20px;text-align:center}
-#home .owl{font-size:min(28vw,120px);animation:bob 2.4s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-#home h1{font-size:34px;letter-spacing:2px}
-#home .stars-line{font-size:18px;color:var(--sub)}
 .bigbtn{
   border:none;border-radius:var(--radius);background:var(--accent);color:#fff;
-  font-size:26px;font-weight:800;padding:20px 48px;box-shadow:0 8px 0 #5a3fd6;
+  font-size:24px;font-weight:800;padding:18px 44px;box-shadow:0 8px 0 #5a3fd6;
   font-family:inherit;cursor:pointer;transition:transform .08s;
 }
 .bigbtn:active{transform:translateY(6px);box-shadow:0 2px 0 #5a3fd6}
+
+/* ---------- HOME (펫 홈) ---------- */
+#home{align-items:center;justify-content:center;gap:14px;text-align:center}
 #parentBtn{position:absolute;top:max(12px,env(safe-area-inset-top));right:14px;background:none;border:none;font-size:13px;color:var(--sub);padding:10px;font-family:inherit}
+#homeStarsBox{position:absolute;top:max(12px,env(safe-area-inset-top));left:14px;font-weight:800;font-size:18px;padding:10px}
+.petscene{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:22px 30px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:min(80vw,340px);
+}
+#petFace{font-size:min(26vw,110px);animation:bob 2.4s ease-in-out infinite;cursor:pointer;position:relative;line-height:1}
+#petFace img{width:min(30vw,130px);height:min(30vw,130px);object-fit:contain;display:block}
+#petFace.sad{filter:grayscale(.6);animation:none}
+#petFx{position:absolute;top:-8px;right:-16px;font-size:26px;pointer-events:none}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.anim-happy{animation:happyJump .6s ease 2 !important}
+@keyframes happyJump{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-18px) scale(1.15)}}
+.anim-sad{animation:none !important;transform:rotate(-6deg)}
+.anim-angry{animation:shake .4s ease 2 !important}
+.anim-sleepy{animation:bob 4s ease-in-out infinite !important;filter:saturate(.7)}
+@keyframes fxFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-24px)}}
+#petFx.go{animation:fxFloat 1.6s ease forwards}
+#petName{font-size:22px;font-weight:800}
+#petHearts{font-size:18px;letter-spacing:2px}
+#petMsg{font-size:15px;color:var(--sub);font-weight:600;min-height:20px}
+#feedBtn{
+  border:none;border-radius:16px;background:var(--accent2);color:#6b4400;
+  font-size:17px;font-weight:800;padding:12px 22px;box-shadow:0 5px 0 #d9922e;font-family:inherit;cursor:pointer;
+}
+#feedBtn:active{transform:translateY(4px);box-shadow:0 1px 0 #d9922e}
+#feedBtn:disabled{opacity:.45}
+.eggrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:90vw}
+.eggslot{
+  background:var(--card);border-radius:16px;box-shadow:var(--shadow);
+  width:60px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:28px;cursor:pointer;position:relative;
+}
+.eggslot .lbl{font-size:10px;color:var(--sub);font-weight:700}
+.eggslot.locked{opacity:.45;filter:grayscale(1)}
+.eggslot.active{outline:3px solid var(--accent)}
 
 /* ---------- GAME ---------- */
 #game{gap:10px}
@@ -45,20 +76,18 @@ body{
 .progress{flex:1;height:16px;background:#e2daff;border-radius:99px;overflow:hidden}
 .progress>div{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#a58bff);border-radius:99px;transition:width .4s}
 .starcount{font-weight:800;font-size:18px}
+#gamePet{font-size:26px;transition:transform .2s}
+#gamePet.jump{transform:translateY(-10px) scale(1.25)}
 #quitBtn{background:none;border:none;font-size:22px;color:var(--sub);font-family:inherit;padding:4px 8px}
-
 .qcard{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
-  padding:16px;gap:14px;min-height:0;position:relative;
+  padding:16px;gap:12px;min-height:0;position:relative;
 }
-#speakBtn{
-  position:absolute;top:12px;right:12px;border:none;background:#f0eaff;
-  border-radius:99px;width:52px;height:52px;font-size:26px;cursor:pointer;
-}
+#speakBtn{position:absolute;top:12px;right:12px;border:none;background:#f0eaff;border-radius:99px;width:52px;height:52px;font-size:26px;cursor:pointer}
 #qtext{font-size:clamp(17px,4.5vw,24px);font-weight:700;text-align:center;line-height:1.5;max-width:560px}
-.objzone{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:6px;max-width:560px;min-height:60px}
-.objzone .obj{font-size:clamp(30px,8vw,44px);position:relative;transition:transform .1s}
+.objzone{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:6px;max-width:560px;min-height:50px}
+.objzone .obj{font-size:clamp(28px,7vw,42px);position:relative;transition:transform .1s}
 .objzone .obj.gone{opacity:.25;filter:grayscale(1)}
 .objzone .obj .cnt{
   position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;
@@ -70,25 +99,44 @@ body{
 .grp{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;background:#faf7ff;border:3px solid #e2daff;border-radius:18px;padding:12px;cursor:pointer;max-width:46%}
 .grp .obj{font-size:clamp(26px,6vw,36px)}
 .vs{display:flex;gap:10px;align-items:stretch;justify-content:center;width:100%}
-.opline{font-size:clamp(26px,7vw,40px);font-weight:800;letter-spacing:2px}
+.opline{font-size:clamp(24px,6vw,36px);font-weight:800;letter-spacing:2px}
+#hint{font-size:16px;color:var(--sub);text-align:center;min-height:22px;font-weight:700}
 
 .choices{display:flex;gap:12px;justify-content:center;padding:4px 0}
 .choice{
   border:none;border-radius:20px;background:#fff;color:var(--ink);
-  font-size:32px;font-weight:800;width:min(28vw,110px);height:min(22vw,88px);
+  font-size:32px;font-weight:800;width:min(28vw,110px);height:min(20vw,84px);
   box-shadow:0 6px 0 #d9d0f5;font-family:inherit;cursor:pointer;transition:transform .08s;
 }
 .choice:active{transform:translateY(4px);box-shadow:0 2px 0 #d9d0f5}
 .choice.correct{background:var(--good);color:#fff;box-shadow:0 6px 0 #2f9e52}
 .choice.wrong{background:var(--bad);color:#fff;box-shadow:0 6px 0 #d64a5f;animation:shake .4s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-#hint{font-size:16px;color:var(--sub);text-align:center;min-height:22px;font-weight:700}
+
+/* ---------- 손글씨 ---------- */
+#writezone{display:none;flex-direction:column;gap:8px;align-items:center;padding:4px 0}
+#padWrap{background:#fff;border-radius:18px;box-shadow:0 6px 0 #d9d0f5;padding:6px;position:relative}
+#pad{touch-action:none;border-radius:14px;background:repeating-linear-gradient(90deg,#fdfcff 0 2px,transparent 2px 100%),#fdfcff;display:block}
+#padGuide{position:absolute;inset:6px;pointer-events:none;color:#d9d0f5;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.padbtns{display:flex;gap:10px}
+.padbtn{border:none;border-radius:14px;font-family:inherit;font-size:17px;font-weight:800;padding:12px 20px;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+#clearBtn{background:#efe9ff;color:var(--sub)}
+#submitInk{background:var(--good);color:#fff;box-shadow:0 5px 0 #2f9e52}
+#confirmBox{
+  display:none;position:absolute;inset:0;background:rgba(255,255,255,.96);border-radius:var(--radius);
+  flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:5;
+}
+#confirmNum{font-size:72px;font-weight:800;color:var(--accent)}
+#confirmQ{font-size:19px;font-weight:700}
+.cbtns{display:flex;gap:14px}
 
 /* ---------- CELEBRATE ---------- */
-#done{align-items:center;justify-content:center;gap:18px;text-align:center}
-#done .owl{font-size:100px}
-#done h2{font-size:30px}
-#doneStars{font-size:26px;letter-spacing:4px}
+#done{align-items:center;justify-content:center;gap:16px;text-align:center}
+#done .owl{font-size:96px}
+#done h2{font-size:28px}
+#doneStars{font-size:24px;letter-spacing:4px}
+.eventcard{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:14px 22px;font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px}
+.eventcard .big{font-size:40px}
 .confetti{position:absolute;top:-20px;font-size:24px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
@@ -105,23 +153,30 @@ body{
 .skillrow .bar{flex:1;height:12px;background:#efe9ff;border-radius:99px;overflow:hidden}
 .skillrow .bar>div{height:100%;background:var(--good);border-radius:99px}
 .skillrow .pct{width:74px;text-align:right;color:var(--sub);font-weight:700}
-.setrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:15px;font-weight:600}
+.setrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:15px;font-weight:600;gap:8px;flex-wrap:wrap}
 .seg{display:flex;background:#efe9ff;border-radius:12px;padding:3px}
 .seg button{border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;padding:7px 12px;border-radius:10px;color:var(--sub)}
 .seg button.on{background:var(--accent);color:#fff}
 .linkbtn{border:none;background:none;color:var(--bad);font-family:inherit;font-size:14px;font-weight:700;padding:8px 0}
+.txtinput{border:2px solid #e2daff;border-radius:12px;font-family:inherit;font-size:15px;font-weight:700;padding:8px 12px;width:110px;color:var(--ink);background:#faf7ff;-webkit-user-select:text;user-select:text}
 #backBtn{background:none;border:none;font-size:16px;color:var(--accent);font-weight:800;font-family:inherit;padding:8px}
 .empty{color:var(--sub);font-size:14px}
 </style>
 </head>
 <body>
 
-<!-- HOME -->
+<!-- HOME = 펫 홈 -->
 <div class="screen on" id="home">
+  <div id="homeStarsBox">⭐ <span id="homeStars">0</span></div>
   <button id="parentBtn">부모님</button>
-  <div class="owl">🦉</div>
-  <h1>수리수리</h1>
-  <div class="stars-line">모은 별 ⭐ <b id="homeStars">0</b>개</div>
+  <div class="petscene">
+    <div id="petFace">🥚<span id="petFx"></span></div>
+    <div id="petName">?</div>
+    <div id="petHearts"></div>
+    <div id="petMsg"></div>
+    <button id="feedBtn">🍖 밥 주기 (⭐2)</button>
+  </div>
+  <div class="eggrow" id="eggrow"></div>
   <button class="bigbtn" id="startBtn">모험 시작!</button>
 </div>
 
@@ -130,6 +185,7 @@ body{
   <div class="topbar">
     <button id="quitBtn">✕</button>
     <div class="progress"><div id="pbar"></div></div>
+    <span id="gamePet">🦉</span>
     <div class="starcount">⭐<span id="gStars">0</span></div>
   </div>
   <div class="qcard">
@@ -137,15 +193,34 @@ body{
     <div id="qtext"></div>
     <div id="stage"></div>
     <div id="hint"></div>
+    <div id="confirmBox">
+      <div id="confirmNum"></div>
+      <div id="confirmQ">이렇게 썼어?</div>
+      <div class="cbtns">
+        <button class="padbtn" id="cYes" style="background:var(--good);color:#fff">응, 맞아!</button>
+        <button class="padbtn" id="cNo" style="background:#efe9ff;color:var(--sub)">다시 쓸래</button>
+      </div>
+    </div>
   </div>
   <div class="choices" id="choices"></div>
+  <div id="writezone">
+    <div id="padWrap">
+      <canvas id="pad"></canvas>
+      <div id="padGuide">여기에 숫자를 써 보세요 ✏️</div>
+    </div>
+    <div class="padbtns">
+      <button class="padbtn" id="clearBtn">🗑 지우기</button>
+      <button class="padbtn" id="submitInk">✅ 다 썼어요</button>
+    </div>
+  </div>
 </div>
 
 <!-- DONE -->
 <div class="screen" id="done">
-  <div class="owl">🦉🎉</div>
+  <div class="owl" id="doneFace">🦉🎉</div>
   <h2>오늘의 모험 완료!</h2>
   <div id="doneStars"></div>
+  <div id="doneEvents" style="display:flex;flex-direction:column;gap:10px"></div>
   <div id="doneMsg" style="color:var(--sub);font-size:17px;font-weight:600"></div>
   <button class="bigbtn" id="homeBtn">집으로</button>
 </div>
@@ -167,19 +242,22 @@ body{
   <div class="card">
     <h3>설정</h3>
     <div class="setrow"><span>숫자 범위</span>
-      <div class="seg" id="segRange">
-        <button data-v="5">5까지</button><button data-v="10">10까지</button><button data-v="20">20까지</button>
-      </div>
+      <div class="seg" id="segRange"><button data-v="5">5까지</button><button data-v="10">10까지</button><button data-v="20">20까지</button></div>
     </div>
     <div class="setrow"><span>한 판 문제 수</span>
-      <div class="seg" id="segLen">
-        <button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button>
-      </div>
+      <div class="seg" id="segLen"><button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button></div>
+    </div>
+    <div class="setrow"><span>문제 언어</span>
+      <div class="seg" id="segLang"><button data-v="ko">한국어</button><button data-v="en">English</button><button data-v="mix">번갈아</button></div>
+    </div>
+    <div class="setrow"><span>답 입력 방식</span>
+      <div class="seg" id="segInput"><button data-v="tap">보기 누르기</button><button data-v="write">손글씨 ✏️</button></div>
     </div>
     <div class="setrow"><span>문제 읽어주기</span>
-      <div class="seg" id="segTts">
-        <button data-v="1">켜기</button><button data-v="0">끄기</button>
-      </div>
+      <div class="seg" id="segTts"><button data-v="1">켜기</button><button data-v="0">끄기</button></div>
+    </div>
+    <div class="setrow"><span>아이 이름 (펫이 불러줘요)</span>
+      <input type="text" id="childNameInput" class="txtinput" maxlength="6" placeholder="예: 지우">
     </div>
     <button class="linkbtn" id="resetBtn">기록 전체 삭제</button>
   </div>
@@ -188,12 +266,13 @@ body{
 <script>
 "use strict";
 /* =====================================================================
-   수리수리 — 7세(만5~6) 수학 앱
-   설계 원칙:
-   1) 모든 문제는 TTS 낭독 + 이모지 시각화 (글 못 읽어도 OK)
-   2) 보기(선택지) = 오개념별 함정 → 무엇을 골랐는지가 곧 진단
-   3) 오답 시 즉시 "같이 세어보기" 스캐폴드 → 두 번째 기회
-   4) 진단 누적 → 취약 오개념 겨냥 문제를 다음 출제에 주입
+   수리수리 v0.2 — 7세(만5~6) 수학 앱
+   1) 전 문제 TTS 낭독(한/영) + 이모지 시각화
+   2) 진단: 보기 모드=오개념 함정 선택지 / 손글씨 모드=자유 오답 분류
+   3) 오답 → 세기 스캐폴드 → 재도전, 두 번째 오답 → 정답 공개
+   4) 취약 오개념 겨냥 재출제(remediation 큐)
+   5) 펫: 부화·진화=정답 수, 먹이=별, 새로운 알=스킬 마스터 (학습이 유일한 연료)
+   6) 손글씨: $P 포인트클라우드 인식 + "맞아?" 확인 루프 (오인식≠오답)
    ===================================================================== */
 
 const $ = s => document.querySelector(s);
@@ -205,38 +284,36 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 const KEY = "suri.v1";
 const defaultState = () => ({
   stars: 0,
-  settings: { max: 10, len: 10, tts: 1 },
-  skills: {},          // {S1:{recent:[0/1...], n, c}}
-  miscon: {},          // {offByOne: n, opConfusion: n, reversal: n, story: n}
-  remediation: [],     // 다음 세션에 주입할 스킬 큐
-  log: [],             // 최근 200개 문제 기록
+  settings: { max: 10, len: 10, tts: 1, lang: "ko", input: "tap", childName: "" },
+  skills: {}, miscon: {}, remediation: [], log: [],
+  pet: null, // migratePet()에서 초기화
 });
 let S;
 try { S = Object.assign(defaultState(), JSON.parse(localStorage.getItem(KEY) || "{}")); }
 catch (e) { S = defaultState(); }
+S.settings = Object.assign(defaultState().settings, S.settings);
 const save = () => localStorage.setItem(KEY, JSON.stringify(S));
 
 /* ---------- TTS ---------- */
-let koVoice = null;
+let koVoice = null, enVoice = null;
 function loadVoices() {
   const vs = speechSynthesis.getVoices();
-  koVoice = vs.find(v => v.lang.startsWith("ko") && v.name.includes("Yuna")) ||
-            vs.find(v => v.lang.startsWith("ko")) || null;
+  koVoice = vs.find(v => v.lang.startsWith("ko") && v.name.includes("Yuna")) || vs.find(v => v.lang.startsWith("ko")) || null;
+  enVoice = vs.find(v => v.lang.startsWith("en") && /Samantha|Karen|Daniel/.test(v.name)) || vs.find(v => v.lang.startsWith("en")) || null;
 }
-if ("speechSynthesis" in window) {
-  loadVoices();
-  speechSynthesis.onvoiceschanged = loadVoices;
-}
-function speak(text) {
+if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function speak(text, lang = "ko") {
   if (!S.settings.tts || !("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  if (koVoice) u.voice = koVoice;
-  u.lang = "ko-KR"; u.rate = 0.85; u.pitch = 1.1;
+  const v = lang === "en" ? enVoice : koVoice;
+  if (v) u.voice = v;
+  u.lang = lang === "en" ? "en-US" : "ko-KR";
+  u.rate = lang === "en" ? 0.85 : 0.85; u.pitch = 1.1;
   speechSynthesis.speak(u);
 }
 
-/* ---------- 효과음 (WebAudio) ---------- */
+/* ---------- 효과음 ---------- */
 let AC = null;
 function tone(freq, dur, type, when = 0, gain = 0.15) {
   try {
@@ -253,30 +330,222 @@ const sfxGood = () => { tone(660, .12, "sine"); tone(880, .18, "sine", .1); tone
 const sfxBad = () => tone(180, .3, "sawtooth", 0, 0.08);
 const sfxTap = () => tone(520, .06, "sine", 0, 0.1);
 
-/* ---------- 스킬 정의 ---------- */
+/* ---------- 스킬·물건 ---------- */
 const SKILLS = {
-  S1: { name: "수 세기",   emoji: "🔢" },
-  S2: { name: "더하기",    emoji: "➕" },
-  S3: { name: "빼기",      emoji: "➖" },
-  S4: { name: "비교하기",  emoji: "⚖️" },
+  S1: { name: "수 세기", emoji: "🔢" }, S2: { name: "더하기", emoji: "➕" },
+  S3: { name: "빼기", emoji: "➖" }, S4: { name: "비교하기", emoji: "⚖️" },
   S5: { name: "이야기 문제", emoji: "📖" },
 };
+const ORDER = ["S1", "S2", "S3", "S4", "S5"];
 const OBJECTS = [
-  { e: "🍎", n: "사과" }, { e: "🍬", n: "사탕" }, { e: "🍓", n: "딸기" },
-  { e: "🍪", n: "쿠키" }, { e: "🎈", n: "풍선" }, { e: "🥚", n: "공룡알" },
-  { e: "🚗", n: "자동차" }, { e: "🌟", n: "별" },
+  { e: "🍎", n: "사과", en: "apple", enPl: "apples" }, { e: "🍬", n: "사탕", en: "candy", enPl: "candies" },
+  { e: "🍓", n: "딸기", en: "strawberry", enPl: "strawberries" }, { e: "🍪", n: "쿠키", en: "cookie", enPl: "cookies" },
+  { e: "🎈", n: "풍선", en: "balloon", enPl: "balloons" }, { e: "🥚", n: "공룡알", en: "dino egg", enPl: "dino eggs" },
+  { e: "🚗", n: "자동차", en: "car", enPl: "cars" }, { e: "🌟", n: "별", en: "star", enPl: "stars" },
 ];
 const ANIMALS = [
-  { e: "🐟", n: "물고기" }, { e: "🐦", n: "새" }, { e: "🐶", n: "강아지" }, { e: "🐱", n: "고양이" },
+  { e: "🐟", n: "물고기", en: "fish", enPl: "fish" }, { e: "🐦", n: "새", en: "bird", enPl: "birds" },
+  { e: "🐶", n: "강아지", en: "puppy", enPl: "puppies" }, { e: "🐱", n: "고양이", en: "cat", enPl: "cats" },
 ];
-const FLYERS = [{ e: "🐦", n: "새" }, { e: "🦋", n: "나비" }];
+const FLYERS = [{ e: "🐦", n: "새", en: "bird", enPl: "birds" }, { e: "🦋", n: "나비", en: "butterfly", enPl: "butterflies" }];
 const NAMES = ["수리", "토토", "라라", "코코"];
+const NAMES_EN = ["Suri", "Toto", "Lala", "Koko"];
+const NUM_EN = ["zero","one","two","three","four","five","six","seven","eight","nine","ten",
+  "eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
 
-/* ---------- 문제 생성 ----------
-   각 문제: {skill, text, speakText, objs|groups, op, answer, choices:[{v,tag}]}
-   tag = 이 오답을 골랐을 때의 오개념 코드 */
+/* ---------- 펫 시스템 ----------
+   학습이 유일한 연료: 부화 5정답, 진화 25정답, 먹이=별, 새 알=스킬 마스터 */
+const SPECIES = {
+  owl:     { name: "수리", stages: ["🥚", "🐣", "🦉"], unlock: null },
+  dino:    { name: "디노", stages: ["🥚", "🦎", "🦖"], unlock: "S1" },
+  cat:     { name: "나비", stages: ["🥚", "🐱", "😸"], unlock: "S2" },
+  penguin: { name: "펭펭", stages: ["🥚", "🐤", "🐧"], unlock: "S3" },
+  dragon:  { name: "드래곤", stages: ["🥚", "🦎", "🐉"], unlock: "S4" },
+  unicorn: { name: "유니", stages: ["🥚", "🐴", "🦄"], unlock: "S5" },
+};
+/* ---------- 캐릭터 성격·대사 뱅크 (결정론 — 실시간 LLM 노출 없음)
+   {child} = 아이 이름 호격(받침 따라 아/야) ---------- */
+const PERSONA = {
+  owl: { // 다정한 선생님
+    greet: ["{child}, 안녕! 오늘도 만나서 기뻐.", "{child}, 수리는 네가 오길 기다렸어!", "부엉부엉~ {child}, 같이 놀자!"],
+    happy: ["{child} 덕분에 힘이 나!", "우와, 기분 최고야!", "네가 있어서 참 좋아."],
+    hungry: ["{child}, 배가 좀 고파졌어…", "밥 먹고 싶다… 별을 모아 줄래?"],
+    sleepy: ["하암… 졸려. {child}도 푹 자야 해.", "밤이네… 별처럼 반짝 자자."],
+    praise: ["{child}, 정답이야! 역시 대단해!", "우와, {child} 진짜 똑똑하다!"],
+  },
+  dino: { // 씩씩한 장난꾸러기
+    greet: ["{child}! 오늘도 모험 가는 거지?!", "크앙~ {child}, 심심했단 말이야!", "디노 등에 타! 출발~!"],
+    happy: ["크앙! 신난다!", "{child}랑 있으면 제일 재밌어!", "한 판 더! 한 판 더!"],
+    hungry: ["크으… 배고파서 힘이 안 나…", "{child}, 밥! 밥이 필요해!"],
+    sleepy: ["쿨쿨… 공룡도 잘 시간…", "하암… 내일 더 크게 크앙 할게."],
+    praise: ["크앙! {child} 최고다!", "역시 내 친구! 정답이야!"],
+  },
+  cat: { // 새침하지만 다정
+    gret: [], greet: ["야옹. …{child} 왔구나. 뭐, 반가워.", "{child}, 기다린 건 아니야. 진짜야.", "야옹~ 오늘은 뭐 하고 놀까?"],
+    happy: ["가르릉… 기분 좋아.", "{child} 옆이 제일 따뜻해.", "…좋아. 조금 많이."],
+    hungry: ["야옹… 배고파. 츄르… 아니 밥 줘.", "{child}, 나 밥 안 주면 삐질 거야."],
+    sleepy: ["냐암… 무릎에서 자고 싶다…", "졸려… 이불 덮어 줘…"],
+    praise: ["오, {child} 제법인데? 정답!", "…멋졌어. 진짜로."],
+  },
+  penguin: { // 겁 많지만 성실
+    greet: ["{child}, 안녕! 오늘도 뒤뚱뒤뚱 왔어.", "펭펭! 넘어져도 다시 일어나면 돼!", "{child}, 손 잡고 같이 가자."],
+    happy: ["펭펭~ 마음이 따뜻해!", "{child}가 웃으면 나도 웃음이 나!", "미끄럼 타고 싶은 기분이야!"],
+    hungry: ["배가 고프면 용기가 안 나…", "{child}, 물고기… 아니 밥 부탁해…"],
+    sleepy: ["뒤뚱… 졸려서 자꾸 넘어져…", "포근하게 자고 싶어…"],
+    praise: ["{child}, 해냈구나! 나도 기뻐!", "펭펭! 정답이야, 멋져!"],
+  },
+  dragon: { // 허세 부리는 꼬마 용사
+    greet: ["흠! {child}, 위대한 드래곤님 등장이다!", "{child}, 오늘의 시련을 함께 넘자!", "불꽃처럼 뜨겁게 가 보자고!"],
+    happy: ["으하하! 이 기분, 전설급이야!", "{child}, 우리 콤비 최강이지!", "날개가 근질근질~ 날고 싶다!"],
+    hungry: ["드래곤도… 배는 고프다…", "{child}, 용사의 밥을 다오!"],
+    sleepy: ["전설의 용도 잘 시간… 쿨쿨.", "하암… 꿈에서 하늘을 날 거야."],
+    praise: ["오오! {child}, 전설적인 정답!", "드래곤이 인정한다! 대단해!"],
+  },
+  unicorn: { // 꿈꾸는 낭만파
+    greet: ["{child}, 오늘 하늘 봤어? 참 예뻤어.", "반짝반짝~ {child} 만나러 무지개 타고 왔어.", "{child}, 오늘은 어떤 꿈을 꿀까?"],
+    happy: ["마음에 무지개가 떴어!", "{child}랑 있으면 반짝여!", "랄라라~ 노래하고 싶은 기분!"],
+    hungry: ["배가 고프면 반짝임이 줄어…", "{child}, 별사탕… 아니 밥 줄래?"],
+    sleepy: ["구름 이불 덮고 잘래…", "하암… 꿈나라에서 만나."],
+    praise: ["{child}, 별처럼 빛나는 정답!", "반짝! 정말 아름다운 답이야!"],
+  },
+};
+/* 그림 스킨: assets/{종}_{상태}.png 있으면 자동 사용, 없으면 이모지 폴백 */
+const ART_STATES = ["egg", "idle", "happy", "sad", "angry", "sick", "sleepy"];
+const ART = {};
+function loadArt(id) {
+  for (const st of ART_STATES) {
+    const k = `${id}_${st}`;
+    if (ART[k] !== undefined) continue;
+    ART[k] = null;
+    const im = new Image();
+    im.onload = () => { ART[k] = im.src; if ($("#home").classList.contains("on")) renderHome(); };
+    im.src = `assets/${k}.png`;
+  }
+}
+const FX = { happy: "✨", sad: "💧", angry: "💢", sick: "🤒", sleepy: "💤", idle: "" };
+function petMood() {
+  const h = new Date().getHours();
+  if (S.pet.hearts <= 1) return "sad";
+  if (h >= 21 || h < 7) return "sleepy";
+  return "idle";
+}
+function petFaceHTML(id, state) {
+  const p = S.pet.pets[id];
+  const st = p.stage === 0 ? "egg" : state;
+  const art = ART[`${id}_${st}`] || (st !== "idle" && p.stage > 0 ? ART[`${id}_idle`] : null);
+  if (art) return `<img src="${art}" alt="">`;
+  return SPECIES[id].stages[p.stage];
+}
+const voc = n => n ? n + (hasJongName(n) ? "아" : "야") : "친구야";
+const hasJongName = w => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; };
+function petLine(kind) {
+  const per = PERSONA[S.pet.active] || PERSONA.owl;
+  const pool = per[kind] && per[kind].length ? per[kind] : per.greet;
+  S.pet.lineIdx = ((S.pet.lineIdx || 0) + 1) % 997;
+  return pool[S.pet.lineIdx % pool.length].replace(/\{child\}/g, voc(S.settings.childName));
+}
+function petAnimate(state) {
+  const face = $("#petFace");
+  face.classList.remove("anim-happy", "anim-sad", "anim-angry", "anim-sleepy");
+  if (state === "happy") face.classList.add("anim-happy");
+  if (state === "sad") face.classList.add("anim-sad");
+  if (state === "angry") face.classList.add("anim-angry");
+  if (state === "sleepy") face.classList.add("anim-sleepy");
+  const fx = $("#petFx");
+  if (fx) {
+    fx.textContent = FX[state] || "";
+    fx.classList.remove("go");
+    if (FX[state]) { void fx.offsetWidth; fx.classList.add("go"); }
+  }
+  setTimeout(() => face.classList.remove("anim-happy", "anim-angry"), 1400);
+}
+function petTalk(trigger) {
+  const p = activePet();
+  if (p.stage === 0) { sfxTap(); speak("알이 꿈틀꿈틀!"); $("#petMsg").textContent = "꿈틀꿈틀…"; return; }
+  const mood = petMood();
+  let kind = "greet", anim = "happy";
+  if (trigger === "feed") { kind = "happy"; anim = "happy"; }
+  else if (mood === "sad") { kind = "hungry"; anim = "sad"; }
+  else if (mood === "sleepy") { kind = "sleepy"; anim = "sleepy"; }
+  else { kind = Math.random() < 0.5 ? "greet" : "happy"; }
+  const line = petLine(kind);
+  $("#petMsg").textContent = line;
+  petAnimate(anim);
+  sfxTap();
+  speak(line);
+}
+const HATCH_XP = 5, EVOLVE_XP = 25;
+const HEART_MAX = 5, HEART_DECAY_H = 8, FEED_COST = 2;
+function migratePet() {
+  if (!S.pet) S.pet = { active: "owl", pets: { owl: { stage: 0, xp: 0 } }, hearts: 5, ts: Date.now() };
+  // 하트 시간 감쇠
+  const el = (Date.now() - S.pet.ts) / 36e5;
+  const dec = Math.floor(el / HEART_DECAY_H);
+  if (dec > 0) { S.pet.hearts = Math.max(0, S.pet.hearts - dec); S.pet.ts = Date.now(); }
+}
+migratePet(); save();
+const activePet = () => S.pet.pets[S.pet.active];
+const petEmoji = (id) => SPECIES[id].stages[S.pet.pets[id].stage];
+function petGainXp(events) {
+  const p = activePet();
+  p.xp++;
+  if (p.stage === 0 && p.xp >= HATCH_XP) { p.stage = 1; events.push({ type: "hatch", id: S.pet.active }); }
+  else if (p.stage === 1 && p.xp >= EVOLVE_XP) { p.stage = 2; events.push({ type: "evolve", id: S.pet.active }); }
+}
+function checkEggUnlock(events) {
+  for (const [id, sp] of Object.entries(SPECIES)) {
+    if (!S.pet.pets[id] && sp.unlock && mastered(sp.unlock)) {
+      S.pet.pets[id] = { stage: 0, xp: 0 };
+      events.push({ type: "egg", id });
+      save();
+    }
+  }
+}
+function renderHome() {
+  migratePet();
+  checkEggUnlock(session ? session.events : []); // 과거 마스터분 소급 해금
+  const id = S.pet.active, p = activePet(), sp = SPECIES[id];
+  loadArt(id);
+  $("#homeStars").textContent = S.stars;
+  const mood = petMood();
+  $("#petFace").innerHTML = petFaceHTML(id, mood === "sad" ? "sad" : mood) + '<span id="petFx"></span>';
+  if (mood === "sleepy" && p.stage > 0) petAnimate("sleepy");
+  $("#petName").textContent = p.stage === 0 ? "알" : sp.name;
+  $("#petHearts").textContent = "❤️".repeat(S.pet.hearts) + "🤍".repeat(HEART_MAX - S.pet.hearts);
+  const msg = p.stage === 0
+    ? `정답 ${Math.max(0, HATCH_XP - p.xp)}개 더 맞히면 부화해요!`
+    : p.stage === 1
+    ? (S.pet.hearts <= 1 ? "배가 고파요… 🥺" : `정답 ${Math.max(0, EVOLVE_XP - p.xp)}개 더 맞히면 어른이 돼요!`)
+    : (S.pet.hearts <= 1 ? "배가 고파요… 🥺" : "모험을 떠나고 싶어요!");
+  $("#petMsg").textContent = msg;
+  $("#petFace").classList.toggle("sad", S.pet.hearts <= 1);
+  $("#feedBtn").disabled = S.stars < FEED_COST || S.pet.hearts >= HEART_MAX;
+  // 알 컬렉션
+  const row = $("#eggrow");
+  row.innerHTML = "";
+  for (const [sid, sp2] of Object.entries(SPECIES)) {
+    const owned = !!S.pet.pets[sid];
+    const el = document.createElement("div");
+    el.className = "eggslot" + (owned ? "" : " locked") + (sid === S.pet.active ? " active" : "");
+    el.innerHTML = owned
+      ? `<span>${petEmoji(sid)}</span><span class="lbl">${S.pet.pets[sid].stage === 0 ? "알" : sp2.name}</span>`
+      : `<span>🥚</span><span class="lbl">🔒${SKILLS[sp2.unlock].name}</span>`;
+    if (owned) el.onclick = () => { S.pet.active = sid; save(); sfxTap(); renderHome(); };
+    row.appendChild(el);
+  }
+}
+$("#feedBtn").onclick = () => {
+  if (S.stars < FEED_COST || S.pet.hearts >= HEART_MAX) return;
+  S.stars -= FEED_COST; S.pet.hearts++; S.pet.ts = Date.now(); save();
+  sfxGood();
+  renderHome();
+  if (activePet().stage > 0) petTalk("feed");
+  else { speak("냠냠! 알이 따뜻해졌어요!"); $("#petMsg").textContent = "알이 따뜻해졌어요!"; }
+};
+$("#petFace").onclick = () => petTalk("tap");
+
+/* ---------- 보기(선택지) 생성 ---------- */
 function makeChoices(answer, wrongs) {
-  // wrongs: [{v,tag}] — answer와 겹치거나 음수/중복 제거 후 2개 채움
   const seen = new Set([answer]);
   const out = [{ v: answer, tag: null }];
   for (const w of wrongs) {
@@ -291,120 +560,116 @@ function makeChoices(answer, wrongs) {
   return shuffle(out);
 }
 
-function genCounting(max) {
-  const n = 2 + rnd(Math.min(max, 9) - 1); // 2..max(≤9)
+/* ---------- 문제 생성 (lang: 'ko'|'en') ---------- */
+function genCounting(max, lang) {
+  const n = 2 + rnd(Math.min(max, 9) - 1);
   const o = pick(OBJECTS);
+  const ko = `${o.n}가 몇 개일까요?`;
+  const en = `How many ${o.enPl} are there?`;
   return {
-    skill: "S1", op: "count",
-    text: `${o.n}가 몇 개일까요?`,
-    speakText: `${o.n}가 몇 개인지 세어 볼까요?`,
-    objs: [{ e: o.e, n }],
-    answer: n,
-    choices: makeChoices(n, shuffle([
-      { v: n - 1, tag: "offByOne" }, { v: n + 1, tag: "offByOne" }, { v: n + 2, tag: "other" },
-    ])),
+    skill: "S1", op: "count", lang,
+    text: lang === "en" ? en : ko,
+    speakText: lang === "en" ? `${en} Let's count!` : `${o.n}가 몇 개인지 세어 볼까요?`,
+    objs: [{ e: o.e, n }], answer: n,
+    choices: makeChoices(n, shuffle([{ v: n - 1, tag: "offByOne" }, { v: n + 1, tag: "offByOne" }, { v: n + 2, tag: "other" }])),
   };
 }
-function genAdd(max) {
+function genAdd(max, lang) {
   const a = 1 + rnd(max - 2), b = 1 + rnd(max - a - 1 || 1);
   const o = pick(OBJECTS);
   return {
-    skill: "S2", op: "add", a, b,
+    skill: "S2", op: "add", a, b, lang,
     text: `${a} + ${b} = ?`,
-    speakText: `${a} 더하기 ${b}는 얼마일까요?`,
-    objs: [{ e: o.e, n: a }, { e: o.e, n: b, sep: true }],
-    answer: a + b,
-    choices: makeChoices(a + b, shuffle([
-      { v: a + b - 1, tag: "offByOne" }, { v: a + b + 1, tag: "offByOne" },
-      { v: Math.abs(a - b), tag: "opConfusion" },
-    ])),
+    speakText: lang === "en" ? `What is ${NUM_EN[a]} plus ${NUM_EN[b]}?` : `${a} 더하기 ${b}는 얼마일까요?`,
+    objs: [{ e: o.e, n: a }, { e: o.e, n: b, sep: true }], answer: a + b,
+    choices: makeChoices(a + b, shuffle([{ v: a + b - 1, tag: "offByOne" }, { v: a + b + 1, tag: "offByOne" }, { v: Math.abs(a - b), tag: "opConfusion" }])),
   };
 }
-function genSub(max) {
+function genSub(max, lang) {
   const a = 2 + rnd(max - 1), b = 1 + rnd(a - 1);
   const o = pick(OBJECTS);
   return {
-    skill: "S3", op: "sub", a, b,
+    skill: "S3", op: "sub", a, b, lang,
     text: `${a} - ${b} = ?`,
-    speakText: `${a} 빼기 ${b}는 얼마일까요?`,
-    objs: [{ e: o.e, n: a, remove: b }],
-    answer: a - b,
-    choices: makeChoices(a - b, shuffle([
-      { v: a - b - 1, tag: "offByOne" }, { v: a - b + 1, tag: "offByOne" },
-      { v: a + b, tag: "opConfusion" },
-    ])),
+    speakText: lang === "en" ? `What is ${NUM_EN[a]} minus ${NUM_EN[b]}?` : `${a} 빼기 ${b}는 얼마일까요?`,
+    objs: [{ e: o.e, n: a, remove: b }], answer: a - b,
+    choices: makeChoices(a - b, shuffle([{ v: a - b - 1, tag: "offByOne" }, { v: a - b + 1, tag: "offByOne" }, { v: a + b, tag: "opConfusion" }])),
   };
 }
-function genCompare(max) {
+function genCompare(max, lang) {
   let a = 2 + rnd(Math.min(max, 8) - 1), b = 2 + rnd(Math.min(max, 8) - 1);
   if (a === b) b = b > 2 ? b - 1 : b + 1;
   const o1 = pick(OBJECTS); let o2 = pick(OBJECTS);
   while (o2.e === o1.e) o2 = pick(OBJECTS);
   return {
-    skill: "S4", op: "compare", a, b,
-    text: "어느 쪽이 더 많을까요? 많은 쪽을 눌러요!",
-    speakText: `${o1.n}와 ${o2.n}, 어느 쪽이 더 많은지 눌러 볼까요?`,
-    groups: [{ e: o1.e, n: a }, { e: o2.e, n: b }],
-    answer: a > b ? 0 : 1,
+    skill: "S4", op: "compare", a, b, lang,
+    text: lang === "en" ? "Which side has more? Tap it!" : "어느 쪽이 더 많을까요? 많은 쪽을 눌러요!",
+    speakText: lang === "en" ? "Which side has more? Tap the side with more!" : `${o1.n}와 ${o2.n}, 어느 쪽이 더 많은지 눌러 볼까요?`,
+    groups: [{ e: o1.e, n: a }, { e: o2.e, n: b }], answer: a > b ? 0 : 1,
   };
 }
-/* 이야기 문제 — 템플릿 뱅크 (ollama 배치 생성으로 확장, scripts/gen-problems.mjs) */
+/* 이야기 문제 — 내장 + problems.json(ollama 배치 생성) 병합 */
 let STORY_TPL = [
-  { op: "add", t: "{name}가 {obj} {a}개를 가지고 있었어요. 친구가 {b}개를 더 주었어요. 이제 모두 몇 개일까요?" },
-  { op: "add", t: "바구니에 {obj} {a}개가 있어요. {name}가 {b}개를 더 담았어요. 바구니에는 모두 몇 개일까요?" },
-  { op: "sub", t: "{name}가 {obj} {a}개를 가지고 있었는데, {b}개를 먹어 버렸어요. 몇 개 남았을까요?" },
-  { op: "sub", t: "나뭇가지에 새가 {a}마리 앉아 있었어요. {b}마리가 날아갔어요. 몇 마리 남았을까요?", fixObj: { e: "🐦", n: "새" } },
-  { op: "sub", t: "풍선 {a}개 중에서 {b}개가 펑 터졌어요. 몇 개 남았을까요?", fixObj: { e: "🎈", n: "풍선" } },
+  { op: "add", ko: "{name}가 {obj} {a}개를 가지고 있었어요. 친구가 {b}개를 더 주었어요. 이제 모두 몇 개일까요?",
+    en: "{name} had {aobj}. A friend gave {name} {b} more. How many are there now?" },
+  { op: "add", ko: "바구니에 {obj} {a}개가 있어요. {name}가 {b}개를 더 담았어요. 바구니에는 모두 몇 개일까요?",
+    en: "There were {aobj} in the basket. {name} put in {b} more. How many are in the basket now?" },
+  { op: "sub", ko: "{name}가 {obj} {a}개를 가지고 있었는데, {b}개를 먹어 버렸어요. 몇 개 남았을까요?",
+    en: "{name} had {aobj} and ate {b} of them. How many are left?" },
+  { op: "sub", ko: "나뭇가지에 새가 {a}마리 앉아 있었어요. {b}마리가 날아갔어요. 몇 마리 남았을까요?",
+    en: "There were {aobj} on the branch. {b} of them flew away. How many are left?", fixObj: { e: "🐦", n: "새", en: "bird", enPl: "birds" } },
+  { op: "sub", ko: "풍선 {a}개 중에서 {b}개가 펑 터졌어요. 몇 개 남았을까요?",
+    en: "{name} had {aobj}. {b} of them popped! How many are left?", fixObj: { e: "🎈", n: "풍선", en: "balloon", enPl: "balloons" } },
 ];
-function genStory(max) {
-  const tpl = pick(STORY_TPL);
-  // 단위·동작에 맞는 물건만: '날아'→나는 동물, '마리'→동물, 그 외→사물
-  const o = tpl.fixObj || pick(/날아|날았/.test(tpl.t) ? FLYERS : tpl.t.includes("마리") ? ANIMALS : OBJECTS);
+const hasJong = w => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; };
+function fillKo(t, slot, word) {
+  // "이(가)"식 병기 표기 정규화 후 받침에 맞는 조사 선택
+  t = t.replace(/\}이\(가\)/g, "}이").replace(/\}을\(를\)/g, "}을").replace(/\}은\(는\)/g, "}은");
+  return t.replace(new RegExp(`\\{${slot}\\}[이가]`, "g"), word + (hasJong(word) ? "이" : "가"))
+          .replace(new RegExp(`\\{${slot}\\}[은는]`, "g"), word + (hasJong(word) ? "은" : "는"))
+          .replace(new RegExp(`\\{${slot}\\}[을를]`, "g"), word + (hasJong(word) ? "을" : "를"))
+          .replace(new RegExp(`\\{${slot}\\}`, "g"), word);
+}
+function genStory(max, lang) {
+  const pool = STORY_TPL.filter(t => lang === "en" ? t.en : t.ko);
+  const tpl = pool.length ? pick(pool) : STORY_TPL[0];
+  const useLang = (lang === "en" && tpl.en) ? "en" : "ko";
+  const src = useLang === "en" ? tpl.en : tpl.ko;
+  const o = tpl.fixObj || pick(/날아|날았|flew/.test(src) ? FLYERS : (src.includes("마리") ? ANIMALS : OBJECTS));
   let a, b, answer;
   if (tpl.op === "add") { a = 1 + rnd(max - 2); b = 1 + rnd(max - a - 1 || 1); answer = a + b; }
   else { a = 2 + rnd(max - 1); b = 1 + rnd(a - 1); answer = a - b; }
-  // 받침 유무에 따라 조사(이/가, 은/는, 을/를) 자동 교정
-  const hasJong = w => { const c = w.charCodeAt(w.length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; };
-  const fill = (t, slot, word) => t
-    .replace(new RegExp(`\\{${slot}\\}[이가]`, "g"), word + (hasJong(word) ? "이" : "가"))
-    .replace(new RegExp(`\\{${slot}\\}[은는]`, "g"), word + (hasJong(word) ? "은" : "는"))
-    .replace(new RegExp(`\\{${slot}\\}[을를]`, "g"), word + (hasJong(word) ? "을" : "를"))
-    .replace(new RegExp(`\\{${slot}\\}`, "g"), word);
-  const text = fill(fill(tpl.t, "name", pick(NAMES)), "obj", o.n)
-                .replace("{a}", a).replace("{b}", b);
-  const wrongTag = "story";
+  const ni = rnd(NAMES.length);
+  const name = useLang === "en" ? NAMES_EN[ni] : NAMES[ni];
+  let text;
+  if (useLang === "en") {
+    text = src.replace(/\{name\}/g, name)
+              .replace(/\{aobj\}/g, `${a} ${a === 1 ? o.en : o.enPl}`)
+              .replace(/\{obj\}/g, o.enPl)
+              .replace(/\{a\}/g, a).replace(/\{b\}/g, b);
+  } else {
+    text = fillKo(fillKo(src, "name", name), "obj", o.n).replace("{a}", a).replace("{b}", b);
+  }
   const wrongs = tpl.op === "add"
     ? [{ v: Math.abs(a - b), tag: "opConfusion" }, { v: answer - 1, tag: "offByOne" }, { v: answer + 1, tag: "offByOne" }]
     : [{ v: a + b, tag: "opConfusion" }, { v: answer - 1, tag: "offByOne" }, { v: answer + 1, tag: "offByOne" }];
   return {
-    skill: "S5", op: tpl.op, a, b, story: true,
+    skill: "S5", op: tpl.op, a, b, story: true, lang: useLang,
     text, speakText: text,
     objs: tpl.op === "add" ? [{ e: o.e, n: a }, { e: o.e, n: b, sep: true }] : [{ e: o.e, n: a, remove: b }],
-    hideObjsUntilWrong: true,   // 처음엔 듣기만 → 틀리면 그림 등장
-    answer,
+    hideObjsUntilWrong: true, answer,
     choices: makeChoices(answer, shuffle(wrongs)),
   };
 }
 const GEN = { S1: genCounting, S2: genAdd, S3: genSub, S4: genCompare, S5: genStory };
 
-/* ---------- 적응 출제 ----------
-   - 마스터 기준: 최근 5개 중 4개 정답
-   - 커리큘럼 순서 S1→S2→S3→S4→S5, 프론티어(아직 마스터 못한 첫 스킬) 중심
-   - 60% 프론티어 / 25% 복습(마스터한 것 중 랜덤) / 15% 다음 스킬 맛보기
-   - remediation 큐가 있으면 최우선 */
-const ORDER = ["S1", "S2", "S3", "S4", "S5"];
-function skillStat(k) {
-  const s = S.skills[k] || { recent: [], n: 0, c: 0 };
-  return s;
-}
+/* ---------- 적응 출제 ---------- */
+function skillStat(k) { return S.skills[k] || { recent: [], n: 0, c: 0 }; }
 function mastered(k) {
   const r = skillStat(k).recent;
   return r.length >= 5 && r.slice(-5).reduce((x, y) => x + y, 0) >= 4;
 }
-function frontier() {
-  for (const k of ORDER) if (!mastered(k)) return k;
-  return "S5";
-}
+function frontier() { for (const k of ORDER) if (!mastered(k)) return k; return "S5"; }
 function pickSkill() {
   if (S.remediation.length) return S.remediation.shift();
   const f = frontier();
@@ -415,40 +680,237 @@ function pickSkill() {
   const idx = Math.min(ORDER.indexOf(f) + 1, ORDER.length - 1);
   return Math.random() < 0.5 ? ORDER[idx] : f;
 }
-function genNext() {
-  const k = pickSkill();
-  return GEN[k](S.settings.max);
+function qLang() {
+  const m = S.settings.lang;
+  if (m === "mix") return session.i % 2 === 0 ? "ko" : "en";
+  return m;
+}
+function genNext() { return GEN[pickSkill()](S.settings.max, qLang()); }
+
+/* ---------- 오답 분류 (손글씨 자유답용) ---------- */
+function classifyWrong(q, v) {
+  if (q.op === "count") return Math.abs(v - q.answer) === 1 ? "offByOne" : "other";
+  if (q.op === "add" || q.op === "sub" || q.story) {
+    if (q.op === "add" && (v === Math.abs(q.a - q.b))) return "opConfusion";
+    if (q.op === "sub" && v === q.a + q.b) return "opConfusion";
+    if (Math.abs(v - q.answer) === 1) return "offByOne";
+    if (q.answer >= 10 && String(v) === String(q.answer).split("").reverse().join("")) return "reversal";
+  }
+  return "other";
 }
 
 /* ---------- 진단 → 처방 ---------- */
 function recordAnswer(q, correct, chosenTag, firstTry) {
   const st = skillStat(q.skill);
   st.n++; if (correct && firstTry) st.c++;
+  const wasMastered = ORDER.map(mastered);
   st.recent.push(correct && firstTry ? 1 : 0);
   if (st.recent.length > 20) st.recent.shift();
   S.skills[q.skill] = st;
-
   if (!correct || !firstTry) {
     const tag = chosenTag || "other";
     S.miscon[tag] = (S.miscon[tag] || 0) + 1;
-    // 처방: 같은 스킬 1개 + 오개념 겨냥 스킬 1개를 큐에 주입
     S.remediation.push(q.skill);
     if (tag === "opConfusion") S.remediation.push(q.op === "add" ? "S3" : "S2");
     if (tag === "offByOne") S.remediation.push("S1");
     if (S.remediation.length > 4) S.remediation = S.remediation.slice(-4);
   }
-  S.log.push({ ts: Date.now(), skill: q.skill, op: q.op, correct: correct && firstTry ? 1 : 0, tag: chosenTag || null });
+  if (correct && firstTry) petGainXp(session.events);
+  // 새 마스터 → 알 해금
+  const nowMastered = ORDER.map(mastered);
+  if (wasMastered.join() !== nowMastered.join()) checkEggUnlock(session.events);
+  S.log.push({ ts: Date.now(), skill: q.skill, op: q.op, lang: q.lang, correct: correct && firstTry ? 1 : 0, tag: chosenTag || null });
   if (S.log.length > 200) S.log.shift();
   save();
 }
 
+/* ---------- $P 손글씨 인식 (Vatavu et al. point-cloud) ---------- */
+const PP_N = 32;
+function ppResample(points, n) {
+  const path = [];
+  let len = 0;
+  for (let i = 1; i < points.length; i++) len += Math.hypot(points[i].x - points[i-1].x, points[i].y - points[i-1].y);
+  if (len === 0) return Array(n).fill(points[0]);
+  const I = len / (n - 1);
+  let D = 0;
+  const out = [points[0]];
+  const pts = points.slice();
+  for (let i = 1; i < pts.length; i++) {
+    const d = Math.hypot(pts[i].x - pts[i-1].x, pts[i].y - pts[i-1].y);
+    if (D + d >= I) {
+      const t = (I - D) / d;
+      const nx = pts[i-1].x + t * (pts[i].x - pts[i-1].x);
+      const ny = pts[i-1].y + t * (pts[i].y - pts[i-1].y);
+      out.push({ x: nx, y: ny });
+      pts.splice(i, 0, { x: nx, y: ny });
+      D = 0;
+    } else D += d;
+  }
+  while (out.length < n) out.push(out[out.length - 1]);
+  return out.slice(0, n);
+}
+function ppNormalize(points) {
+  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+  for (const p of points) { minX = Math.min(minX, p.x); minY = Math.min(minY, p.y); maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y); }
+  const w = maxX - minX, h = maxY - minY, m = Math.max(w, h) || 1;
+  // 축별 정규화(좁게 쓴 숫자 보정)하되, 극단적으로 좁은 획('1')은 그대로 두도록 바닥값 30%
+  const sx = Math.max(w, 0.3 * m), sy = Math.max(h, 0.3 * m);
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+  return points.map(p => ({ x: (p.x - cx) / sx, y: (p.y - cy) / sy }));
+}
+function ppCloudDist(a, b, start) {
+  const n = a.length;
+  const matched = new Array(n).fill(false);
+  let sum = 0, i = start;
+  do {
+    let min = 1e9, idx = -1;
+    for (let j = 0; j < n; j++) {
+      if (matched[j]) continue;
+      const d = Math.hypot(a[i].x - b[j].x, a[i].y - b[j].y);
+      if (d < min) { min = d; idx = j; }
+    }
+    matched[idx] = true;
+    const w = 1 - ((i - start + n) % n) / n;
+    sum += w * min;
+    i = (i + 1) % n;
+  } while (i !== start);
+  return sum;
+}
+function ppMatch(a, b) {
+  const step = Math.max(1, Math.floor(Math.pow(a.length, 0.5)));
+  let min = 1e9;
+  for (let i = 0; i < a.length; i += step) {
+    min = Math.min(min, ppCloudDist(a, b, i), ppCloudDist(b, a, i));
+  }
+  return min;
+}
+/* 숫자 템플릿 (단위좌표, y 아래로) — 다중획은 이어붙여 포인트클라우드로 */
+function arc(cx, cy, rx, ry, a0, a1, n = 14) {
+  const out = [];
+  for (let i = 0; i <= n; i++) {
+    const t = a0 + (a1 - a0) * i / n;
+    out.push({ x: cx + rx * Math.cos(t), y: cy + ry * Math.sin(t) });
+  }
+  return out;
+}
+const line = (x1, y1, x2, y2, n = 10) => Array.from({ length: n + 1 }, (_, i) => ({ x: x1 + (x2 - x1) * i / n, y: y1 + (y2 - y1) * i / n }));
+const DIGIT_SHAPES = {
+  0: [[...arc(.5, .5, .32, .43, -Math.PI / 2, 1.5 * Math.PI)]],
+  1: [[...line(.5, .06, .5, .94)], [...line(.32, .28, .5, .06), ...line(.5, .06, .5, .94)]],
+  2: [[...arc(.5, .3, .3, .24, Math.PI, 2.05 * Math.PI), ...line(.76, .42, .2, .92), ...line(.2, .92, .82, .92)]],
+  3: [[...arc(.48, .28, .26, .21, 1.15 * Math.PI, 2.6 * Math.PI), ...arc(.48, .7, .3, .24, -.6 * Math.PI, .85 * Math.PI)]],
+  4: [[...line(.62, .06, .18, .6), ...line(.18, .6, .84, .6)], [...line(.62, .06, .18, .6), ...line(.18, .6, .84, .6), ...line(.66, .34, .66, .94)]],
+  5: [[...line(.78, .08, .26, .08), ...line(.26, .08, .24, .45), ...arc(.47, .66, .26, .24, -.5 * Math.PI, .8 * Math.PI)]],
+  6: [[...arc(.62, .3, .34, .35, -.7 * Math.PI, -1.35 * Math.PI), ...arc(.48, .68, .24, .24, -Math.PI / 2, 1.5 * Math.PI)]],
+  7: [[...line(.16, .1, .82, .1), ...line(.82, .1, .42, .94)], [...line(.16, .1, .82, .1), ...line(.82, .1, .42, .94), ...line(.28, .52, .68, .52)]],
+  8: [[...arc(.5, .28, .22, .2, -Math.PI / 2, 1.5 * Math.PI), ...arc(.5, .7, .27, .24, -Math.PI / 2, 1.5 * Math.PI)]],
+  9: [[...arc(.5, .3, .24, .23, -Math.PI / 2, 1.5 * Math.PI), ...line(.73, .3, .68, .94)]],
+};
+const DIGIT_TPL = [];
+for (const [d, variants] of Object.entries(DIGIT_SHAPES))
+  for (const v of variants) DIGIT_TPL.push({ d: Number(d), pts: ppNormalize(ppResample(v, PP_N)) });
+function recognizeDigit(points) {
+  if (points.length < 4) return null;
+  const cand = ppNormalize(ppResample(points, PP_N));
+  let best = null, bestScore = 1e9;
+  for (const t of DIGIT_TPL) {
+    const s = ppMatch(cand, t.pts);
+    if (s < bestScore) { bestScore = s; best = t.d; }
+  }
+  return best;
+}
+/* 획 → 숫자 그룹 (x 겹침으로 1~2자리 분리) */
+function strokesToNumber(strokes) {
+  if (!strokes.length) return null;
+  const boxes = strokes.map(s => {
+    let minX = 1e9, maxX = -1e9;
+    for (const p of s) { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); }
+    return { s, minX, maxX };
+  }).sort((a, b) => a.minX - b.minX);
+  const groups = [];
+  for (const b of boxes) {
+    const g = groups[groups.length - 1];
+    if (g && b.minX < g.maxX + 14) { g.strokes.push(b.s); g.maxX = Math.max(g.maxX, b.maxX); }
+    else groups.push({ strokes: [b.s], maxX: b.maxX });
+  }
+  const digits = groups.map(g => recognizeDigit(g.strokes.flat()));
+  if (digits.some(d => d === null)) return null;
+  return Number(digits.join(""));
+}
+
+/* ---------- 손글씨 패드 ---------- */
+const pad = $("#pad");
+const padCtx = pad.getContext("2d");
+let strokes = [], curStroke = null, padDpr = 1;
+function setupPad() {
+  const w = Math.min(window.innerWidth - 60, 480), h = 150;
+  padDpr = window.devicePixelRatio || 1;
+  pad.width = w * padDpr; pad.height = h * padDpr;
+  pad.style.width = w + "px"; pad.style.height = h + "px";
+  padCtx.scale(padDpr, padDpr);
+  padCtx.lineWidth = 7; padCtx.lineCap = "round"; padCtx.lineJoin = "round";
+  padCtx.strokeStyle = "#5a3fd6";
+  clearPad();
+}
+function clearPad() {
+  padCtx.clearRect(0, 0, pad.width, pad.height);
+  strokes = []; curStroke = null;
+  $("#padGuide").style.display = "flex";
+}
+function padPos(e) {
+  const r = pad.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+pad.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  pad.setPointerCapture(e.pointerId);
+  $("#padGuide").style.display = "none";
+  curStroke = [padPos(e)];
+});
+pad.addEventListener("pointermove", e => {
+  if (!curStroke) return;
+  const p = padPos(e);
+  const last = curStroke[curStroke.length - 1];
+  curStroke.push(p);
+  padCtx.beginPath(); padCtx.moveTo(last.x, last.y); padCtx.lineTo(p.x, p.y); padCtx.stroke();
+});
+["pointerup", "pointercancel"].forEach(ev => pad.addEventListener(ev, () => {
+  if (curStroke && curStroke.length > 1) strokes.push(curStroke);
+  curStroke = null;
+}));
+$("#clearBtn").onclick = () => { sfxTap(); clearPad(); };
+$("#submitInk").onclick = () => {
+  if (!strokes.length) return;
+  const num = strokesToNumber(strokes);
+  if (num === null) {
+    $("#hint").textContent = "잘 못 알아봤어요. 조금 크게 써 줄래요?";
+    speak("음, 잘 못 알아봤어요. 조금 더 크게 써 줄래요?");
+    clearPad();
+    return;
+  }
+  pendingInk = num;
+  $("#confirmNum").textContent = num;
+  $("#confirmBox").style.display = "flex";
+  speak(session.q.lang === "en" ? `Did you write ${NUM_EN[num] || num}?` : `${num} 라고 썼어요?`, session.q.lang);
+};
+let pendingInk = null;
+$("#cYes").onclick = () => {
+  $("#confirmBox").style.display = "none";
+  const v = pendingInk; pendingInk = null;
+  clearPad();
+  submitAnswer(v);
+};
+$("#cNo").onclick = () => { $("#confirmBox").style.display = "none"; pendingInk = null; clearPad(); sfxTap(); };
+
 /* ---------- 게임 진행 ---------- */
 let session = null;
 function startSession() {
-  session = { i: 0, total: S.settings.len, stars: 0, q: null, tries: 0, lock: false };
+  session = { i: 0, total: S.settings.len, stars: 0, q: null, tries: 0, lock: false, wrongTag: null, events: [] };
+  $("#gamePet").textContent = petEmoji(S.pet.active);
   showScreen("game");
   nextQuestion();
 }
+function useWrite(q) { return S.settings.input === "write" && q.op !== "compare"; }
 function nextQuestion() {
   if (session.i >= session.total) return endSession();
   session.q = genNext();
@@ -456,15 +918,20 @@ function nextQuestion() {
   renderQuestion(session.q);
   $("#pbar").style.width = (session.i / session.total * 100) + "%";
   $("#gStars").textContent = session.stars;
-  setTimeout(() => speak(session.q.speakText), 300);
+  setTimeout(() => speak(session.q.speakText, session.q.lang), 300);
 }
 function renderQuestion(q) {
   $("#qtext").textContent = q.text;
   $("#hint").textContent = "";
+  $("#confirmBox").style.display = "none";
   const stage = $("#stage");
   stage.innerHTML = "";
   const choicesEl = $("#choices");
   choicesEl.innerHTML = "";
+  const write = useWrite(q);
+  $("#writezone").style.display = write ? "flex" : "none";
+  choicesEl.style.display = write ? "none" : "flex";
+  if (write) { setupPad(); }
 
   if (q.op === "compare") {
     const vs = document.createElement("div");
@@ -479,11 +946,8 @@ function renderQuestion(q) {
     stage.appendChild(vs);
     return;
   }
-
-  // 물건 그림 (이야기 문제는 처음엔 숨김 — 듣기 훈련)
   const zone = document.createElement("div");
-  zone.className = "objzone";
-  zone.id = "objzone";
+  zone.className = "objzone"; zone.id = "objzone";
   let idx = 0;
   q.objs.forEach((grp, gi) => {
     if (gi > 0 && grp.sep) {
@@ -502,77 +966,81 @@ function renderQuestion(q) {
   });
   if (q.hideObjsUntilWrong) zone.style.display = "none";
   stage.appendChild(zone);
-
-  q.choices.forEach(c => {
-    const b = document.createElement("button");
-    b.className = "choice"; b.textContent = c.v;
-    b.onclick = () => onChoice(c, b);
-    choicesEl.appendChild(b);
-  });
+  if (!write) {
+    q.choices.forEach(c => {
+      const b = document.createElement("button");
+      b.className = "choice"; b.textContent = c.v;
+      b.onclick = () => { if (!session.lock) submitAnswer(c.v, c.tag, b); };
+      choicesEl.appendChild(b);
+    });
+  }
 }
 function onCompareTap(gi, el) {
   if (session.lock) return;
   const q = session.q;
-  const correct = gi === q.answer;
-  if (correct) {
+  if (gi === q.answer) {
     session.lock = true;
     el.style.borderColor = "var(--good)";
     handleCorrect();
   } else {
     el.style.borderColor = "var(--bad)";
-    handleWrong({ tag: "compare" }, null);
+    session.tries++;
+    session.wrongTag = "compare";
+    sfxBad();
+    if (session.tries === 1) {
+      $("#hint").textContent = "하나씩 짝지어 세어 볼까?";
+      speak("음, 다시 한 번! 하나씩 세어 보자!");
+    } else { session.lock = true; revealAnswer(q); }
   }
 }
-function onChoice(c, btn) {
-  if (session.lock) return;
+/* 공통 답 제출 — v: 숫자, tag: 보기 함정 태그(손글씨는 분류로 산출), btn: 보기 버튼 */
+function submitAnswer(v, tag, btn) {
   const q = session.q;
-  if (c.v === q.answer) {
+  if (v === q.answer) {
     session.lock = true;
-    btn.classList.add("correct");
+    if (btn) btn.classList.add("correct");
     handleCorrect();
   } else {
-    btn.classList.add("wrong");
-    btn.disabled = true;
-    handleWrong(c, btn);
+    if (btn) { btn.classList.add("wrong"); btn.disabled = true; }
+    session.tries++;
+    session.wrongTag = tag !== undefined && tag !== null ? tag : classifyWrong(q, v);
+    sfxBad();
+    if (session.tries === 1) {
+      const zone = $("#objzone");
+      if (zone) zone.style.display = "";
+      $("#hint").textContent = q.lang === "en" ? "It's okay! Tap and count together 👆" : "괜찮아! 그림을 하나씩 눌러서 세어 보자 👆";
+      speak(q.lang === "en" ? "That's okay! Let's tap and count together!" : "괜찮아요! 그림을 하나씩 누르면서 같이 세어 볼까요?", q.lang);
+      enableCountingScaffold(q);
+    } else {
+      session.lock = true;
+      revealAnswer(q);
+    }
   }
 }
 function handleCorrect() {
   const q = session.q, firstTry = session.tries === 0;
   sfxGood();
-  speak(firstTry ? pick(["딩동댕! 정답이에요!", "우와, 맞았어요!", "정답! 최고예요!"]) : "그렇지! 이제 맞았어요!");
-  recordAnswer(q, true, session.wrongTag || null, firstTry);
-  if (firstTry) session.stars++;
-  else if (session.tries === 1) session.stars += 0; // 재도전 성공은 별 없이 칭찬만
-  S.stars += firstTry ? 1 : 0;
+  const pet = $("#gamePet");
+  pet.classList.add("jump");
+  setTimeout(() => pet.classList.remove("jump"), 300);
+  const petPraise = firstTry && q.lang === "ko" && activePet().stage > 0 && Math.random() < 0.35;
+  speak(firstTry
+    ? (q.lang === "en" ? pick(["Correct! Great job!", "Yes! You got it!"])
+       : petPraise ? petLine("praise") : pick(["딩동댕! 정답이에요!", "우와, 맞았어요!", "정답! 최고예요!"]))
+    : (q.lang === "en" ? "That's right! You got it now!" : "그렇지! 이제 맞았어요!"), q.lang);
+  recordAnswer(q, true, session.wrongTag, firstTry);
+  if (firstTry) { session.stars++; S.stars++; }
   save();
   $("#gStars").textContent = session.stars;
+  $("#gamePet").textContent = petEmoji(S.pet.active);
   session.i++;
   setTimeout(nextQuestion, 1400);
-}
-function handleWrong(c, btn) {
-  const q = session.q;
-  session.tries++;
-  session.wrongTag = c.tag;
-  sfxBad();
-  if (session.tries === 1) {
-    // 스캐폴드: 그림 보여주고 같이 세기 유도
-    const zone = $("#objzone");
-    if (zone) zone.style.display = "";
-    $("#hint").textContent = "괜찮아! 그림을 하나씩 눌러서 세어 보자 👆";
-    speak("괜찮아요! 그림을 하나씩 누르면서 같이 세어 볼까요?");
-    enableCountingScaffold(q);
-  } else {
-    // 두 번째 오답: 정답 공개 + 세기 애니메이션
-    session.lock = true;
-    revealAnswer(q);
-  }
 }
 function enableCountingScaffold(q) {
   const zone = $("#objzone");
   if (!zone) return;
   let count = 0;
-  // 빼기: 없어지는 것 먼저 지우는 연출
-  if (q.op === "sub" || (q.story && q.op === "sub")) {
+  if (q.op === "sub") {
     zone.querySelectorAll("[data-removable]").forEach((el, i) => {
       setTimeout(() => { el.classList.add("gone"); sfxTap(); }, 400 + i * 350);
     });
@@ -588,9 +1056,11 @@ function enableCountingScaffold(q) {
   });
 }
 function revealAnswer(q) {
-  $("#hint").textContent = `정답은 ${q.op === "compare" ? "더 많은 쪽" : q.answer}이었어요!`;
-  speak(q.op === "compare" ? "이쪽이 더 많았어요! 다음에 다시 해 보자!" : `정답은 ${q.answer}이었어요. 다음에 다시 해 보자!`);
-  recordAnswer(q, false, session.wrongTag || null, false);
+  const ansTxt = q.op === "compare" ? (q.lang === "en" ? "this side" : "더 많은 쪽") : q.answer;
+  $("#hint").textContent = (q.lang === "en" ? "The answer was " : "정답은 ") + ansTxt + (q.lang === "en" ? "!" : "이었어요!");
+  speak(q.lang === "en" ? `The answer was ${q.op === "compare" ? "this side" : NUM_EN[q.answer] || q.answer}. Let's try again next time!`
+                        : (q.op === "compare" ? "이쪽이 더 많았어요! 다음에 다시 해 보자!" : `정답은 ${q.answer}이었어요. 다음에 다시 해 보자!`), q.lang);
+  recordAnswer(q, false, session.wrongTag, false);
   document.querySelectorAll(".choice").forEach(b => {
     if (Number(b.textContent) === q.answer) b.classList.add("correct");
   });
@@ -599,13 +1069,26 @@ function revealAnswer(q) {
 }
 function endSession() {
   showScreen("done");
+  $("#doneFace").textContent = petEmoji(S.pet.active) + "🎉";
   $("#doneStars").textContent = "⭐".repeat(Math.max(session.stars, 0)) || "💪";
   const perfect = session.stars === session.total;
-  $("#doneMsg").textContent = perfect ? "완벽해! 수리가 깜짝 놀랐어요!" :
+  $("#doneMsg").textContent = perfect ? "완벽해! 모두 맞혔어요!" :
     session.stars >= session.total * 0.7 ? "정말 잘했어요!" : "끝까지 해낸 게 제일 멋져요!";
-  speak(perfect ? "완벽해요! 모두 맞혔어요!" : "오늘의 모험 완료! 정말 잘했어요!");
+  // 펫 이벤트 (부화/진화/새 알)
+  const ev = $("#doneEvents");
+  ev.innerHTML = "";
+  const said = [];
+  for (const e of session.events) {
+    const sp = SPECIES[e.id];
+    const card = document.createElement("div");
+    card.className = "eventcard";
+    if (e.type === "hatch") { card.innerHTML = `<span class="big">${sp.stages[1]}</span> ${sp.name}가 부화했어요!`; said.push(`${sp.name}가 알에서 태어났어요!`); }
+    if (e.type === "evolve") { card.innerHTML = `<span class="big">${sp.stages[2]}</span> ${sp.name}가 어른이 되었어요!`; said.push(`${sp.name}가 어른이 되었어요!`); }
+    if (e.type === "egg") { card.innerHTML = `<span class="big">🥚✨</span> 새로운 알을 발견했어요! (${sp.name})`; said.push("새로운 알을 발견했어요!"); }
+    ev.appendChild(card);
+  }
+  speak((perfect ? "완벽해요! 모두 맞혔어요! " : "오늘의 모험 완료! 정말 잘했어요! ") + said.join(" "));
   confettiRain();
-  $("#homeStars").textContent = S.stars;
 }
 function confettiRain() {
   const em = ["🎉", "⭐", "🎊", "💜", "🧡"];
@@ -631,6 +1114,10 @@ const MISCON_TEXT = {
     t: "빼기 문제를 더하기로(또는 반대로) 계산하는 모습이 보여요. '더하면 늘어나고 빼면 줄어든다'는 방향 감각을 잡는 중이에요.",
     tip: "물건으로 직접 보여주세요 — 사탕 5개에서 2개를 진짜로 치우면서 \"줄었네! 빼기야\"라고 말해 주세요.",
   },
+  reversal: {
+    t: "두 자리 수를 뒤집어 쓰는 경우가 있어요(12를 21로). 자릿수 개념이 자라는 중이라는 신호예요.",
+    tip: "\"십의 자리 먼저!\"를 노래처럼 — 열 개 묶음과 낱개를 물건으로 묶어 보여 주세요.",
+  },
   story: {
     t: "계산 자체보다 이야기를 듣고 상황을 파악하는 걸 어려워해요. 듣기 집중력과 언어 이해가 크는 중이에요.",
     tip: "문제를 다시 들려주고 \"무슨 일이 일어났어?\"를 먼저 물어봐 주세요. 답보다 상황 설명이 먼저예요.",
@@ -642,7 +1129,6 @@ const MISCON_TEXT = {
   other: { t: "", tip: "" },
 };
 function renderParent() {
-  // 오늘의 한 문장: 최근 30문제 기준 최다 오개념
   const recent = S.log.slice(-30);
   const counts = {};
   recent.forEach(l => { if (l.tag && !l.correct) counts[l.tag] = (counts[l.tag] || 0) + 1; });
@@ -655,12 +1141,11 @@ function renderParent() {
     const acc = Math.round(recent.reduce((a, l) => a + l.correct, 0) / recent.length * 100);
     box.innerHTML = `<div class="insight">👍 최근 정답률 ${acc}% — 특별한 취약 패턴 없이 잘하고 있어요.${acc >= 85 ? " 설정에서 숫자 범위를 넓혀 볼 때예요!" : ""}</div>`;
   } else {
-    sorted.slice(0, 2).forEach(([k, n]) => {
+    sorted.slice(0, 2).forEach(([k]) => {
       const m = MISCON_TEXT[k];
       box.innerHTML += `<div class="insight">🔍 ${m.t}<br><br>💬 <b>${m.tip}</b></div>`;
     });
   }
-  // 스킬바
   const sb = $("#skillbars");
   sb.innerHTML = "";
   ORDER.forEach(k => {
@@ -673,22 +1158,33 @@ function renderParent() {
     const acc = Math.round(r.reduce((a, b) => a + b, 0) / r.length * 100);
     sb.innerHTML += `<div class="skillrow"><span class="nm">${SKILLS[k].emoji} ${SKILLS[k].name}</span><div class="bar"><div style="width:${acc}%"></div></div><span class="pct">${acc}% (${r.length})</span></div>`;
   });
-  // 설정 세그먼트
   syncSeg("#segRange", S.settings.max);
   syncSeg("#segLen", S.settings.len);
+  syncSeg("#segLang", S.settings.lang);
+  syncSeg("#segInput", S.settings.input);
   syncSeg("#segTts", S.settings.tts);
+  $("#childNameInput").value = S.settings.childName || "";
 }
 function syncSeg(sel, val) {
-  document.querySelectorAll(sel + " button").forEach(b =>
-    b.classList.toggle("on", Number(b.dataset.v) === Number(val)));
+  document.querySelectorAll(sel + " button").forEach(b => b.classList.toggle("on", String(b.dataset.v) === String(val)));
 }
-$("#segRange").onclick = e => { if (e.target.dataset.v) { S.settings.max = +e.target.dataset.v; save(); syncSeg("#segRange", S.settings.max); } };
-$("#segLen").onclick = e => { if (e.target.dataset.v) { S.settings.len = +e.target.dataset.v; save(); syncSeg("#segLen", S.settings.len); } };
-$("#segTts").onclick = e => { if (e.target.dataset.v) { S.settings.tts = +e.target.dataset.v; save(); syncSeg("#segTts", S.settings.tts); } };
+const segBind = (sel, key, numeric) => {
+  $(sel).onclick = e => {
+    if (!e.target.dataset.v) return;
+    S.settings[key] = numeric ? +e.target.dataset.v : e.target.dataset.v;
+    save(); syncSeg(sel, S.settings[key]);
+  };
+};
+segBind("#segRange", "max", true);
+segBind("#segLen", "len", true);
+segBind("#segLang", "lang", false);
+segBind("#segInput", "input", false);
+segBind("#segTts", "tts", true);
+$("#childNameInput").addEventListener("input", e => { S.settings.childName = e.target.value.trim(); save(); });
 $("#resetBtn").onclick = () => {
-  if (confirm("모든 학습 기록과 별을 삭제할까요?")) {
-    S = defaultState(); save();
-    renderParent(); $("#homeStars").textContent = 0;
+  if (confirm("모든 학습 기록과 별, 펫을 삭제할까요?")) {
+    S = defaultState(); migratePet(); save();
+    renderParent(); renderHome();
   }
 };
 
@@ -696,14 +1192,15 @@ $("#resetBtn").onclick = () => {
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
   $("#" + id).classList.add("on");
+  if (id === "home") renderHome();
 }
 $("#startBtn").onclick = () => { tone(660, .1, "sine"); startSession(); };
-$("#quitBtn").onclick = () => { speechSynthesis.cancel && speechSynthesis.cancel(); showScreen("home"); $("#homeStars").textContent = S.stars; };
+$("#quitBtn").onclick = () => { speechSynthesis.cancel && speechSynthesis.cancel(); showScreen("home"); };
 $("#homeBtn").onclick = () => showScreen("home");
-$("#speakBtn").onclick = () => session && speak(session.q.speakText);
+$("#speakBtn").onclick = () => session && speak(session.q.speakText, session.q.lang);
 $("#backBtn").onclick = () => showScreen("home");
 
-/* 부모 버튼: 2초 길게 누르기 (아이 오터치 방지) */
+/* 부모 버튼: 2초 길게 누르기 */
 let pTimer = null;
 const pBtn = $("#parentBtn");
 ["touchstart", "mousedown"].forEach(ev => pBtn.addEventListener(ev, e => {
@@ -715,15 +1212,26 @@ const pBtn = $("#parentBtn");
   clearTimeout(pTimer); pBtn.textContent = "부모님";
 }));
 
-/* ---------- 외부 문항 뱅크 로드 (ollama 배치 생성물) ---------- */
+/* ---------- 외부 문항·대사 뱅크 ---------- */
 fetch("problems.json").then(r => r.ok ? r.json() : null).then(d => {
-  if (d && Array.isArray(d.storyTemplates) && d.storyTemplates.length) {
-    STORY_TPL = STORY_TPL.concat(d.storyTemplates);
+  if (d && Array.isArray(d.storyTemplates)) {
+    // v1 형식 {op,t} → {op,ko} 호환
+    STORY_TPL = STORY_TPL.concat(d.storyTemplates.map(x => x.t ? { op: x.op, ko: x.t } : x).filter(x => x.ko || x.en));
+  }
+}).catch(() => {});
+fetch("dialogue.json").then(r => r.ok ? r.json() : null).then(d => {
+  if (!d) return;
+  for (const [sp, kinds] of Object.entries(d)) {
+    if (!PERSONA[sp]) continue;
+    for (const [k, lines] of Object.entries(kinds)) {
+      if (!Array.isArray(lines)) continue;
+      PERSONA[sp][k] = (PERSONA[sp][k] || []).concat(lines.filter(l => typeof l === "string"));
+    }
   }
 }).catch(() => {});
 
 /* ---------- init ---------- */
-$("#homeStars").textContent = S.stars;
+renderHome();
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }

@@ -23,6 +23,20 @@
 로컬: `python3 -m http.server 8123 --directory .` → http://localhost:8123
 (TTS·PWA 설치는 https 필요 — GitHub Pages에서 확인)
 
+## 그림 스킨 (직접 그린 캐릭터 적용)
+
+`assets/{종}_{상태}.png` 를 넣으면 코드 수정 없이 자동 적용, 없으면 이모지 폴백.
+- 종: `owl` `dino` `cat` `penguin` `dragon` `unicorn`
+- 상태: `egg` `idle` `happy` `sad` `angry` `sick` `sleepy`
+- 규격: PNG, 투명 배경, 정사각 512×512 이상 (권장 1024)
+- 한 종 × 7상태부터 시작 추천. 생성 AI에 뽑을 땐 "한 마리만, 투명 배경, 정면" 필수.
+
+## 펫 대사
+
+성격별 대사 뱅크(결정론) = 내장 `PERSONA` + `dialogue.json`(ollama 배치 생성).
+확장: `node scripts/gen-dialogue.mjs 4` (종당 상황별 4개씩 추가, 검증 통과분만 병합).
+`{child}` 자리는 부모 설정의 아이 이름 호격(받침 따라 야/아)으로 치환.
+
 ## 데이터
 
 학습 기록은 전부 기기 localStorage (`suri.v1`). 계정·서버·수집 없음.

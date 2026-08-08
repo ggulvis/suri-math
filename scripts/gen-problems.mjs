@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   수리수리 이야기 문제 템플릿 배치 생성기 (로컬 ollama, 무료)
+   수리수리 이야기 문제 템플릿 배치 생성기 (로컬 ollama, 무료) — v2 한/영 쌍
 
    설계: LLM은 "런타임"이 아니라 "오프라인 배치"에서만 사용한다.
    - 생성: qwen3.6 로컬 → 비용 0, 아이에게 실시간 LLM 출력 노출 0
@@ -18,18 +18,20 @@ const OUT = join(ROOT, "problems.json");
 const MODEL = "qwen3.6:35b-a3b-coding-mxfp8";
 const N = Number(process.argv[2] || 10);
 
-const PROMPT = `너는 만 5~6세(한국 나이 7세) 아이를 위한 수학 이야기 문제 템플릿을 만드는 작가야.
+const PROMPT = `너는 만 5~6세(한국 나이 7세) 아이를 위한 수학 이야기 문제 템플릿을 만드는 작가야. 각 템플릿은 한국어(ko)와 영어(en) 쌍으로 만든다.
 
-규칙:
-- 한국어. 아이가 "듣고" 이해할 짧고 쉬운 문장 (한 템플릿 = 2~3문장, 60자 이내).
-- 반드시 플레이스홀더 사용: {name}=아이 이름, {obj}=물건 이름, {a}=처음 수, {b}=변화량. ({name}과 {obj}는 상황에 따라 생략 가능하지만 {a},{b}는 필수)
-- 숫자를 직접 쓰지 말 것. 오직 {a},{b}만.
+공통 규칙:
+- 아이가 "듣고" 이해할 짧고 쉬운 문장 (한 템플릿 = 2~3문장). 숫자를 직접 쓰지 말 것.
 - op는 "add"(늘어나는 상황) 또는 "sub"(줄어드는 상황).
 - 상황은 일상적·긍정적으로: 간식, 동물, 놀이터, 장난감. 무섭거나 슬픈 상황 금지.
-- 마지막 문장은 반드시 "몇 개일까요?" / "몇 마리 남았을까요?" 같은 질문.
+- 마지막 문장은 반드시 질문.
+
+ko 규칙: 플레이스홀더 {name}(아이 이름), {obj}(물건), {a}(처음 수), {b}(변화량). {a},{b} 필수. 60자 이내.
+en 규칙: 플레이스홀더 {name}, {aobj}(예: "3 apples"처럼 수+물건이 통째로 들어감), {b}. {aobj},{b} 필수. 아주 쉬운 영어(유치원 수준). 90자 이내.
+ko와 en은 같은 상황이어야 한다.
 
 JSON 배열만 출력해. 다른 말 금지:
-[{"op":"add","t":"..."},{"op":"sub","t":"..."}]
+[{"op":"add","ko":"...","en":"..."}]
 
 ${N}개 만들어줘. add와 sub를 섞어서.`;
 
@@ -50,30 +52,38 @@ async function callOllama() {
 }
 
 /* ---------- 결정론 검증 ---------- */
-const BANNED = /죽|사라져 버렸|무서|울었|다쳤|병원|피/;
+const BANNED_KO = /죽|사라져 버렸|무서|울었|다쳤|병원|피/;
+const BANNED_EN = /died|dead|scary|cried|hurt|hospital|blood/i;
 function validate(tpl) {
   const errs = [];
   if (!tpl || typeof tpl !== "object") return ["not object"];
   if (!["add", "sub"].includes(tpl.op)) errs.push("bad op");
-  const t = String(tpl.t || "");
-  if (!t.includes("{a}") || !t.includes("{b}")) errs.push("missing {a}/{b}");
-  if (/\d/.test(t)) errs.push("hard-coded digit");
-  if (t.length < 15 || t.length > 90) errs.push(`bad length ${t.length}`);
-  if (!/까요\s*\?|까\s*\?/.test(t)) errs.push("no question ending");
-  if (BANNED.test(t)) errs.push("banned word");
-  if (!/[가-힣]/.test(t)) errs.push("not korean");
+  const ko = String(tpl.ko || ""), en = String(tpl.en || "");
+  // ko
+  if (!ko.includes("{a}") || !ko.includes("{b}")) errs.push("ko missing {a}/{b}");
+  if (/\d/.test(ko)) errs.push("ko hard-coded digit");
+  if (ko.length < 15 || ko.length > 90) errs.push(`ko bad length ${ko.length}`);
+  if (!/까요\s*\?|까\s*\?/.test(ko)) errs.push("ko no question");
+  if (BANNED_KO.test(ko)) errs.push("ko banned word");
+  if (!/[가-힣]/.test(ko)) errs.push("ko not korean");
+  // en
+  if (!en.includes("{aobj}") || !en.includes("{b}")) errs.push("en missing {aobj}/{b}");
+  if (/\d/.test(en)) errs.push("en hard-coded digit");
+  if (en.length < 20 || en.length > 130) errs.push(`en bad length ${en.length}`);
+  if (!en.trim().endsWith("?")) errs.push("en no question");
+  if (BANNED_EN.test(en)) errs.push("en banned word");
+  if (/[가-힣]/.test(en)) errs.push("en contains korean");
   return errs;
 }
 
 function extractJson(text) {
-  // 모델이 <think>나 잡담을 섞어도 첫 JSON 배열만 추출
   const m = text.match(/\[[\s\S]*\]/);
   if (!m) return null;
   try { return JSON.parse(m[0]); } catch { return null; }
 }
 
 const main = async () => {
-  console.log(`[gen] ${MODEL} 에게 템플릿 ${N}개 요청 중… (로컬, 수 분 걸릴 수 있음)`);
+  console.log(`[gen] ${MODEL} 에게 한/영 템플릿 ${N}쌍 요청 중… (로컬, 수 분 걸릴 수 있음)`);
   const raw = await callOllama();
   const arr = extractJson(raw);
   if (!Array.isArray(arr)) {
@@ -81,16 +91,19 @@ const main = async () => {
     process.exit(1);
   }
   const bank = JSON.parse(readFileSync(OUT, "utf8"));
-  const existing = new Set((bank.storyTemplates || []).map(x => x.t));
+  // v1 형식 {op,t} → {op,ko} 마이그레이션
+  bank.storyTemplates = (bank.storyTemplates || []).map(x => x.t ? { op: x.op, ko: x.t } : x);
+  const existing = new Set(bank.storyTemplates.map(x => x.ko));
   let ok = 0, dup = 0, bad = 0;
   for (const tpl of arr) {
     const errs = validate(tpl);
-    if (errs.length) { bad++; console.log(`  ✗ [${errs.join(",")}] ${JSON.stringify(tpl).slice(0, 80)}`); continue; }
-    if (existing.has(tpl.t)) { dup++; continue; }
-    existing.add(tpl.t);
-    bank.storyTemplates.push({ op: tpl.op, t: tpl.t });
+    if (errs.length) { bad++; console.log(`  ✗ [${errs.join(",")}] ${JSON.stringify(tpl).slice(0, 90)}`); continue; }
+    if (existing.has(tpl.ko)) { dup++; continue; }
+    existing.add(tpl.ko);
+    bank.storyTemplates.push({ op: tpl.op, ko: tpl.ko, en: tpl.en });
     ok++;
-    console.log(`  ✓ [${tpl.op}] ${tpl.t}`);
+    console.log(`  ✓ [${tpl.op}] ${tpl.ko}`);
+    console.log(`         ${tpl.en}`);
   }
   bank.generatedAt = new Date().toISOString();
   writeFileSync(OUT, JSON.stringify(bank, null, 2));
