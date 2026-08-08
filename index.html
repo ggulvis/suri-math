@@ -275,10 +275,10 @@ select.txtinput{width:180px}
     <div id="hint"></div>
     <div id="confirmBox">
       <div id="confirmNum"></div>
-      <div id="confirmQ">이렇게 썼어?</div>
+      <div id="confirmQ">이렇게 썼어요?</div>
       <div class="cbtns">
-        <button class="padbtn" id="cYes" style="background:var(--good);color:#fff">응, 맞아!</button>
-        <button class="padbtn" id="cNo" style="background:#efe9ff;color:var(--sub)">다시 쓸래</button>
+        <button class="padbtn" id="cYes" style="background:var(--good);color:#fff">네, 맞아요!</button>
+        <button class="padbtn" id="cNo" style="background:#efe9ff;color:var(--sub)">다시 쓸래요</button>
       </div>
     </div>
   </div>
@@ -354,7 +354,7 @@ select.txtinput{width:180px}
    집에서 펫이 걸어다니고, 아기 땐 응애응애 → 크면서 말을 배운다.
    케어: 밥·재우기(밤)·치료(아픔)·훈련(=학습). 재화는 오직 학습에서만.
    ===================================================================== */
-const APP_VERSION = "4";
+const APP_VERSION = "5";
 
 const $ = s => document.querySelector(s);
 const rnd = n => Math.floor(Math.random() * n);
@@ -391,18 +391,25 @@ setTimeout(checkUpdate, 4000);
 
 /* ---------- TTS ---------- */
 let koVoice = null, enVoice = null, koVoiceList = [];
-function rankKo(v) { // 향상된 음성 우선
-  if (/향상|Enhanced|Premium/i.test(v.name)) return 0;
-  if (/Yuna|유나|Sujin|수진/i.test(v.name)) return 1;
-  return 2;
+/* 품질 판별: 이름뿐 아니라 내부 식별자(voiceURI)까지 본다.
+   iOS는 기본/프리미엄이 같은 이름("유나")으로 잡히는 경우가 있음 */
+const vQuality = v => {
+  const s = (v.voiceURI || "") + " " + (v.name || "");
+  if (/premium|프리미엄/i.test(s)) return 2;
+  if (/enhanced|향상/i.test(s)) return 1;
+  return 0;
+};
+const vQualityLabel = ["기본", "향상됨", "프리미엄"];
+function rankKo(v) { // 프리미엄 > 향상 > 기본, 같으면 유나/수진 우선
+  return -(vQuality(v) * 10 + (/Yuna|유나|Sujin|수진/i.test(v.name) ? 1 : 0));
 }
 function loadVoices() {
   const vs = speechSynthesis.getVoices();
   koVoiceList = vs.filter(v => v.lang.startsWith("ko")).sort((a, b) => rankKo(a) - rankKo(b));
-  koVoice = koVoiceList.find(v => v.name === S.settings.voiceKo) || koVoiceList[0] || null;
-  enVoice = vs.find(v => v.lang.startsWith("en") && /향상|Enhanced|Premium/i.test(v.name)) ||
-            vs.find(v => v.lang.startsWith("en") && /Samantha|Karen|Daniel/.test(v.name)) ||
-            vs.find(v => v.lang.startsWith("en")) || null;
+  koVoice = koVoiceList.find(v => v.voiceURI === S.settings.voiceKo || v.name === S.settings.voiceKo) || koVoiceList[0] || null;
+  const ens = vs.filter(v => v.lang.startsWith("en")).sort((a, b) => -vQuality(a) + vQuality(b));
+  enVoice = ens.find(v => vQuality(v) > 0) ||
+            ens.find(v => /Samantha|Karen|Daniel/.test(v.name)) || ens[0] || null;
 }
 if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
 function speak(text, lang = "ko", opts = {}) {
@@ -818,7 +825,7 @@ function renderShop() {
     el.innerHTML = `<div class="ico">${it.e}</div><div class="nm">${it.n}</div><div class="pr">${owned ? "보유중 ✓" : "⭐" + it.cost}</div>`;
     if (!owned) el.onclick = () => {
       if (S.house.owned.length >= slots) { $("#shopNote").textContent = "🏠 자리가 꽉 찼어요! 별을 모아 더 큰 집으로 이사하면 더 놓을 수 있어요."; return; }
-      if (S.stars < it.cost) { $("#shopNote").textContent = "⭐ 별이 부족해요. 공부 모험에서 별을 모아 오자!"; return; }
+      if (S.stars < it.cost) { $("#shopNote").textContent = "⭐ 별이 부족해요. 공부 모험에서 별을 모아 와요!"; return; }
       S.stars -= it.cost; S.house.owned.push(it.id); save();
       sfxGood(); renderShop(); renderHome();
       $("#shopNote").textContent = `${it.e} ${it.n}을(를) 방에 놓았어요!`;
@@ -1325,8 +1332,8 @@ function onCompareTap(gi, el) {
     session.wrongTag = "compare";
     sfxBad();
     if (session.tries === 1) {
-      $("#hint").textContent = "하나씩 짝지어 세어 볼까?";
-      speak("음, 다시 한 번! 하나씩 세어 보자!");
+      $("#hint").textContent = "하나씩 짝지어 세어 볼까요?";
+      speak("음, 다시 한 번! 하나씩 짝지어 세어 보세요!");
     } else { session.lock = true; revealAnswer(q); }
   }
 }
@@ -1344,7 +1351,7 @@ function submitAnswer(v, tag, btn) {
     if (session.tries === 1) {
       const zone = $("#objzone");
       if (zone) zone.style.display = "";
-      $("#hint").textContent = q.lang === "en" ? "It's okay! Tap and count together 👆" : "괜찮아! 그림을 하나씩 눌러서 세어 보자 👆";
+      $("#hint").textContent = q.lang === "en" ? "It's okay! Tap and count together 👆" : "괜찮아요! 그림을 하나씩 눌러서 세어 보세요 👆";
       speak(q.lang === "en" ? "That's okay! Let's tap and count together!" : "괜찮아요! 그림을 하나씩 누르면서 같이 세어 볼까요?", q.lang);
       enableCountingScaffold(q);
     } else {
@@ -1366,7 +1373,7 @@ function handleCorrect() {
   } else {
     speak(firstTry
       ? (q.lang === "en" ? pick(["Correct! Great job!", "Yes! You got it!"]) : pick(["딩동댕! 정답이에요!", "우와, 맞았어요!", "정답! 최고예요!"]))
-      : (q.lang === "en" ? "That's right! You got it now!" : "그렇지! 이제 맞았어요!"), q.lang);
+      : (q.lang === "en" ? "That's right! You got it now!" : "그렇죠! 이제 맞았어요!"), q.lang);
   }
   recordAnswer(q, true, session.wrongTag, firstTry);
   if (firstTry) { session.stars++; S.stars++; S.starsEarned++; }
@@ -1398,7 +1405,7 @@ function revealAnswer(q) {
   const ansTxt = q.op === "compare" ? (q.lang === "en" ? "this side" : "더 많은 쪽") : q.answer;
   $("#hint").textContent = (q.lang === "en" ? "The answer was " : "정답은 ") + ansTxt + (q.lang === "en" ? "!" : "이었어요!");
   speak(q.lang === "en" ? `The answer was ${q.op === "compare" ? "this side" : NUM_EN[q.answer] || q.answer}. Let's try again next time!`
-                        : (q.op === "compare" ? "이쪽이 더 많았어요! 다음에 다시 해 보자!" : `정답은 ${q.answer}이었어요. 다음에 다시 해 보자!`), q.lang);
+                        : (q.op === "compare" ? "이쪽이 더 많았어요! 다음에 다시 해 봐요!" : `정답은 ${q.answer}이었어요. 다음에 다시 해 봐요!`), q.lang);
   recordAnswer(q, false, session.wrongTag, false);
   document.querySelectorAll(".choice").forEach(b => {
     if (Number(b.textContent) === q.answer) b.classList.add("correct");
@@ -1425,7 +1432,7 @@ function endSession() {
   $("#doneFace").textContent = (activePet().stage > 0 ? SPECIES[S.pet.active].stages[activePet().stage] : "🥚") + "🎉";
   $("#doneStars").textContent = "⭐".repeat(Math.max(doneSession.stars, 0)) || "💪";
   const perfect = doneSession.stars === doneSession.total;
-  $("#doneMsg").textContent = perfect ? "완벽해! 모두 맞혔어요!" :
+  $("#doneMsg").textContent = perfect ? "완벽해요! 모두 맞혔어요!" :
     doneSession.stars >= doneSession.total * 0.7 ? "정말 잘했어요!" : "끝까지 해낸 게 제일 멋져요!";
   speak((perfect ? "완벽해요! 모두 맞혔어요! " : "오늘의 모험 완료! 정말 잘했어요! ") + said.join(" "));
   confettiRain();
@@ -1510,9 +1517,10 @@ function renderParent() {
   if (!koVoiceList.length) loadVoices();
   koVoiceList.forEach(v => {
     const o = document.createElement("option");
-    o.value = v.name;
-    o.textContent = v.name.replace(/^com\.apple.*\./, "") + (rankKo(v) === 0 ? " ⭐" : "");
-    if (koVoice && v.name === koVoice.name) o.selected = true;
+    o.value = v.voiceURI || v.name;
+    const q = vQuality(v);
+    o.textContent = `${v.name.replace(/^com\.apple.*\./, "")} (${vQualityLabel[q]})${q === 2 ? " ⭐" : ""}`;
+    if (koVoice && (v.voiceURI || v.name) === (koVoice.voiceURI || koVoice.name)) o.selected = true;
     sel.appendChild(o);
   });
   if (!koVoiceList.length) {
